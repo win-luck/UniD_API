@@ -1,15 +1,12 @@
 package com.springmvc.unid.domain;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User{
 
     private String id; // 사용자 id
@@ -22,8 +19,10 @@ public class User{
 
     private String major; // 사용자의 소속 학과
 
-    private String email; // 사용자의 이메일
+    private List<String> links; // 사용자의 관련 링크
 
-    private ArrayList<Notify> notifies; // 사용자가 가지고 있는 알림 명단
+    private List<Notify> notifies; // 사용자가 가지고 있는 알림 명단
+
+    private List<teamMember> teamList; // 사용자가 소속된 팀 명단
 }
 

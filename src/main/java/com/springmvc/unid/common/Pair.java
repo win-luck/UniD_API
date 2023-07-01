@@ -1,19 +1,14 @@
 package com.springmvc.unid.common;
 
-public class Pair {
-    private String X;
-    private String Y;
+import lombok.Getter;
 
-    public Pair(String X, String Y) {
+@Getter
+public class Pair { // Pair 객체 구현
+    private final String X;
+    private final Long Y;
+
+    public Pair(String X, Long Y) {
         this.X = X;
         this.Y = Y;
-    }
-
-    public String getX() {
-        return X;
-    }
-
-    public String getY() {
-        return Y;
     }
 }
