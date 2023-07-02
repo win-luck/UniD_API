@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class User{
+public class UserInfo {
 
     private String id; // 사용자 id
 
