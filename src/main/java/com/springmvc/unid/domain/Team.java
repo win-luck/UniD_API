@@ -19,9 +19,9 @@ public class Team {
 
     private String university; // 팀의 소속 대학
 
-    private HashMap<String, Pair> ReqAndCnt; // 팀원 모집 요건과 인원
+    private String link; // 팀의 링크
 
-    private List<String> links; // 팀의 링크
+    private List<requirement> require; // 팀원 모집 요구사항 (1:N)
 
-    private List<teamMember> teamMembers; // 소속된 팀원 명단
+    private List<teamMember> teamMembers; // 소속된 팀원 명단 (N:N)
 }
