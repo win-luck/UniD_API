@@ -5,6 +5,7 @@ import com.springmvc.unid.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,9 +20,9 @@ public interface TeamRepository extends JpaRepository<Team, String> {
 
     // 4. 팀 수정 -> save(Team team)이 역할을 겸함
 
-    // 5. 대학으로 팀 찾기
-    Optional<Team> findTeamByUniversity(String university);
+    // 5. 특정 대학 소속 팀 조회
+    List<Team> findTeamByUniversity(String university);
 
-    // 6. 팀장이 own하는 팀 찾기
-    Optional<Team> findTeamByUser(User user);
+    // 6. 특정 user가 팀장인 팀 조회
+    List<Team> findTeamByUser(User user);
 }
