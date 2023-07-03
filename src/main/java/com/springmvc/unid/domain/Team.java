@@ -11,9 +11,13 @@ import java.util.List;
 @Setter
 @Table(name = "team")
 public class Team {
-
     @Id
-    private String name; // 팀명 - 기본키
+    private String name; // 팀명 - 기본키 (팀명은 변경할 수 없음)
+
+    // 각 팀 테이블은 팀장의 id를 외래키로 가짐
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leader", nullable = false)
+    private User user; // 팀장의 id - user의 기본키가 외래키
 
     @Column(nullable = false)
     private String oneLine; // 팀의 한줄설명
@@ -32,4 +36,5 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<teamMember> teamMembersList; // 소속된 팀원 명단 (N:N)
+
 }

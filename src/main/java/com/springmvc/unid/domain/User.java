@@ -15,7 +15,7 @@ import java.util.List;
 public class User {
 
     @Id
-    private String user_id; // user id - 기본키
+    private String userId; // user id - 기본키
 
     @Column(nullable = false)
     private String name; // 사용자 별명
@@ -33,9 +33,9 @@ public class User {
     private String link; // 사용자의 링크
 
     @OneToMany(mappedBy = "user")
-    private List<userNotify> userNotify; // 사용자가 가지고 있는 알림 명단 (N:N)
+    private List<userNotify> userNotifies; // 사용자가 가지고 있는 알림 명단 (N:N)
 
     @OneToMany(mappedBy = "user")
-    private List<teamMember> teamMember; // 사용자가 소속된 팀 명단 (N:N)
+    private List<teamMember> teamMembers; // 사용자가 소속된 팀 명단 (N:N)
 }
 
