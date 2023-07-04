@@ -1,5 +1,6 @@
 package com.springmvc.unid.dto;
 
+import com.springmvc.unid.domain.User;
 import lombok.Data;
 
 @Data
@@ -11,12 +12,12 @@ public class UserDto {
     private final String major;
     private final String link;
 
-    public UserDto(String userId, String name, String pw, String university, String major, String link) {
-        this.userId = userId;
-        this.name = name;
-        this.pw = pw;
-        this.university = university;
-        this.major = major;
-        this.link = link;
+    public UserDto(User user) {
+        this.userId = user.getUserId();
+        this.name = user.getName();
+        this.pw = user.getPw();
+        this.university = user.getUniversity();
+        this.major = user.getMajor();
+        this.link = user.getLink();
     }
 }

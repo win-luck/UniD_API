@@ -1,5 +1,6 @@
 package com.springmvc.unid.dto;
 
+import com.springmvc.unid.domain.Notify;
 import lombok.Data;
 
 @Data
@@ -11,12 +12,12 @@ public class NotifyDto {
     private final String senderContent;
     private final String link;
 
-    public NotifyDto(Long id, Long type, String senderName, String senderTeam, String senderContent, String link) {
-        this.id = id;
-        this.type = type;
-        this.senderName = senderName;
-        this.senderTeam = senderTeam;
-        this.senderContent = senderContent;
-        this.link = link;
+    public NotifyDto(Notify notify) {
+        this.id = notify.getNotifyId();
+        this.type = notify.getType();
+        this.senderName = notify.getUser().getName();
+        this.senderTeam = notify.getTeam().getName();
+        this.senderContent = notify.getContents();
+        this.link = notify.getLink();
     }
 }

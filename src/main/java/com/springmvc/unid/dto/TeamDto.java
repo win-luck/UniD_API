@@ -1,12 +1,9 @@
 package com.springmvc.unid.dto;
 
-import com.springmvc.unid.domain.User;
+import com.springmvc.unid.domain.Team;
+import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
+@Data
 public class TeamDto {
     private final String name;
     private final String leader;
@@ -15,12 +12,12 @@ public class TeamDto {
     private final String university;
     private final String link;
 
-    public TeamDto(String name, String leader, String oneLine, String description, String university, String link) {
-        this.name = name;
-        this.leader = leader;
-        this.oneLine = oneLine;
-        this.description = description;
-        this.university = university;
-        this.link = link;
+    public TeamDto(Team team) {
+        this.name = team.getName();
+        this.leader = team.getUser().getName();
+        this.oneLine = team.getOneLine();
+        this.description = team.getDescription();
+        this.university = team.getUniversity();
+        this.link = team.getLink();
     }
 }
