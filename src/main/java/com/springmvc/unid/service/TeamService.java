@@ -1,18 +1,15 @@
 package com.springmvc.unid.service;
 
 import com.springmvc.unid.domain.Team;
-import com.springmvc.unid.domain.teamMember;
-import com.springmvc.unid.dto.TeamDto;
-import com.springmvc.unid.dto.UserDto;
-import com.springmvc.unid.repository.TeamMemberRepository;
 import com.springmvc.unid.repository.TeamRepository;
-import com.springmvc.unid.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TeamService {
 

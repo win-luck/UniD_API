@@ -39,15 +39,13 @@ public interface TeamMemberRepository extends JpaRepository<teamMember, Long> {
     이러한 메서드들은 Spring Data JPA의 JpaRepository 인터페이스를 상속받아서 기본적으로 제공됩니다.
     */
 
-    // teamName으로 team의 소속 팀원 찾기
-    List<teamMember> findByTeam(Team team);
+    // 1. 특정 팀의 팀원을 조회
+    Optional<teamMember> findByTeamAndUser(Team team, User user);
 
-    // userId로 user의 소속 팀 찾기
+    // 2. 사용자가 소속된 팀 조회
     List<teamMember> findByUser(User user);
 
-    // user가 특정 팀에서 탈퇴
-    void deleteById(Long id); // id로
-    void deleteByTeamAndUser(Team team, User user); // team와 user로 탈퇴
+    // 3. 팀에 소속된 모든 팀원 조회
+    List<teamMember> findByTeam(Team team);
 
-    // user가 특정 팀에 가입 -> save(teamMember teamMember)가 내재되어 있음
 }
