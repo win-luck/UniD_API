@@ -42,10 +42,9 @@ public interface TeamMemberRepository extends JpaRepository<teamMember, Long> {
     // 1. 특정 팀의 팀원을 조회
     Optional<teamMember> findByTeamAndUser(Team team, User user);
 
-    // 2. 사용자가 소속된 팀 조회
-    List<teamMember> findByUser(User user);
-
-    // 3. 팀에 소속된 모든 팀원 조회
+    // 2. 특정 팀의 모든 팀원들을 조회
     List<teamMember> findByTeam(Team team);
 
+    // 3. 특정 유저가 속한 모든 팀들을 조회
+    List<teamMember> findByUser(User user);
 }

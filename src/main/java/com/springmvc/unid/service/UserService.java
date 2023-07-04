@@ -5,9 +5,11 @@ import com.springmvc.unid.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor // final 필드 또는 @NonNull 어노테이션이 지정된 필드만을(UserRepository) 대상으로 생성자를 생성
 public class UserService {
 
