@@ -1,6 +1,5 @@
 package com.springmvc.unid.repository;
 
-import com.springmvc.unid.domain.Login;
 import com.springmvc.unid.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,8 +13,10 @@ public interface UserRepository extends JpaRepository<User, String>{
 
     // 2. 회원 가입 - save(User user)가 내재되어 있음
 
-    // 3. 회원 탈퇴
-    void deleteById(String userId);
+    // 3. 회원 탈퇴 void deleteById(String userId);
 
     // 4. 회원 정보 수정 - save(User user)가 내재되어 있음
+
+    // 5. 회원 로그인
+    Optional<User> findByUserIdAndPw(String userId, String pw);
 }
