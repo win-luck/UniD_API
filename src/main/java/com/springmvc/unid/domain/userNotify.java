@@ -2,12 +2,10 @@ package com.springmvc.unid.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Setter
@@ -30,4 +28,13 @@ public class userNotify { // User와 Notify의 다대다 관계로 인해 생성
     @Column(name = "notify_date", nullable = false)
     @CreatedDate
     private LocalDate notifyDate; // 알림 생성 시간
+
+    public userNotify() {
+    }
+
+    public userNotify(User user, Notify notify) {
+        this.user = user;
+        this.notify = notify;
+        this.notifyDate = LocalDate.now();
+    }
 }
