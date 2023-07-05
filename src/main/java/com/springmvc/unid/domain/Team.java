@@ -1,6 +1,7 @@
 package com.springmvc.unid.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "team")
+@NoArgsConstructor
 public class Team {
     @Id
     private String name; // 팀명 - 기본키 (팀명은 변경할 수 없음)
@@ -37,4 +39,13 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<teamMember> teamMembersList; // 소속된 팀원 명단 (N:N)
 
+    public Team(String name, User user, String oneLine, String description, String university, String link, List<Requirement> requirementList) {
+        this.name = name;
+        this.user = user;
+        this.oneLine = oneLine;
+        this.description = description;
+        this.university = university;
+        this.link = link;
+        this.requirementList = requirementList;
+    }
 }

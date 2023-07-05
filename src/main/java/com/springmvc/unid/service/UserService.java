@@ -17,8 +17,9 @@ public class UserService {
     private final UserRepository userRepository;
 
     // 1. 회원 조회
-    public User findById(String name) {
-        return userRepository.findById(name).orElse(null);
+    public UserDto findById(UserDto userDto) {
+        Optional<User> user = userRepository.findById(userDto.getUserId());
+        return user.map(UserDto::new).orElse(null);
     }
 
     // 2. 회원 가입
@@ -28,13 +29,13 @@ public class UserService {
     }
 
     // 3. 회원 탈퇴
-    void deleteById(UserDto userDto) {
+    public void deleteById(UserDto userDto) {
         userRepository.deleteById(userDto.getUserId());
     }
 
     // 4. 회원 정보 수정
-    public UserDto update(User user) {
-        return new UserDto(userRepository.save(user));
+    public UserDto update(UserDto userDto) {
+        return new UserDto(userRepository.save(DtoToEntity(userDto)));
     }
 
     // 5. 로그인 (id, pw로 회원 조회)
@@ -43,7 +44,7 @@ public class UserService {
         return user.map(UserDto::new).orElse(null);
     }
 
-    public User DtoToEntity (UserDto userDto) {
+    private User DtoToEntity (UserDto userDto) {
         return new User(userDto.getUserId(), userDto.getName(), userDto.getPw(), userDto.getUniversity(), userDto.getMajor(), userDto.getLink());
     }
 }
