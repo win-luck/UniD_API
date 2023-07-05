@@ -1,6 +1,7 @@
 package com.springmvc.unid.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "notify")
+@NoArgsConstructor
 public class Notify {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +38,6 @@ public class Notify {
     @OneToMany(mappedBy = "notify")
     private List<userNotify> userNotifies; // 이 알림을 수신한 사용자 명단 (N:N)
 
-    public Notify() {
-    }
-
     public Notify(Long type, User user, Team team, String contents, String link) {
         this.type = type;
         this.user = user;
@@ -46,5 +45,4 @@ public class Notify {
         this.contents = contents;
         this.link = link;
     }
-
 }
