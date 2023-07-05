@@ -1,8 +1,7 @@
 package com.springmvc.unid.domain;
 
-import com.springmvc.unid.dto.UserDto;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -12,6 +11,7 @@ import java.util.List;
 @Table(name = "user")
 @Getter
 @Setter
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -38,7 +38,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<teamMember> teamMembers; // 사용자가 소속된 팀 명단 (N:N)
 
-    public User(String name, String pw, String university, String major, String link) {
+    public User(String userId, String name, String pw, String university, String major, String link) {
+        this.userId = userId;
         this.name = name;
         this.pw = pw;
         this.university = university;
@@ -46,17 +47,5 @@ public class User {
         this.link = link;
     }
 
-    public User(UserDto userDto) {
-        this.userId = userDto.getUserId();
-        this.name = userDto.getName();
-        this.pw = userDto.getPw();
-        this.university = userDto.getUniversity();
-        this.major = userDto.getMajor();
-        this.link = userDto.getLink();
-    }
-
-    public User() {
-
-    }
 }
 
