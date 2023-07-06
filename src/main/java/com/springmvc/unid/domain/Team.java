@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -57,9 +58,31 @@ public class Team {
     public void addRequirement(Requirement requirement) {
         this.requirementList.add(requirement);
         requirement.setTeam(this);
-    } // 팀원 모집 요구사항 추가 시 사용
+    } // 팀원 모집 요구사항 추가
+
+    public void removeRequirement(Long id) {
+        for(Requirement requirement : this.requirementList) {
+            if(Objects.equals(requirement.getId(), id)) {
+                this.requirementList.remove(requirement);
+                break;
+            }
+        }
+    } // 팀원 모집 요구사항 삭제
+
+    public void modifyRequirement(Long id, String position, Long n, String requireContents) {
+        for(Requirement requirement : this.requirementList) {
+            if(Objects.equals(requirement.getId(), id)) {
+                requirement.setPosition(position);
+                requirement.setN(n);
+                requirement.setRequireContents(requireContents);
+                break;
+            }
+        }
+    } // 팀원 모집 요구사항 수정
+
+    // 요구사항(Requirement)은 팀이 소유하는 개념이므로 관련 비즈니스 로직을 팀 엔티티에 넣는다.
 
     public void setTeamLeader(User user) {
         this.user = user;
-    } // 팀장 교체 시 사용*/
+    } // 팀장 교체
 }

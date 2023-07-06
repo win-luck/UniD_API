@@ -1,20 +1,25 @@
 package com.springmvc.unid.service;
 
+import com.springmvc.unid.domain.Team;
+import com.springmvc.unid.domain.TeamMember;
 import com.springmvc.unid.domain.User;
+import com.springmvc.unid.repository.TeamMemberRepository;
 import com.springmvc.unid.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class UserService { // 7/7 00:17 작업 완료
+public class UserService {
 
     private final UserRepository userRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     // 로그인
     public Long login(String id, String password) {
@@ -65,7 +70,23 @@ public class UserService { // 7/7 00:17 작업 완료
 
     // 특정 user 조회
     public User findOne(Long userId) {
-        return userRepository.findOne(userId);
+        Optional<User> findUsers = userRepository.findById(userId);
+        if (findUsers.isPresent()) {
+            return findUsers.get();
+        } else {
+            throw new IllegalStateException("존재하지 않는 user입니다.");
+        }
+    }
+
+    // 특정 팀에 현재 소속된 user 조회
+    public List<User> findUsersByTeam(Team team) {
+        // List<TeamMember> teamMembers = team.getTeamMembersList(); // 이렇게 하면 안되는 이유는 teamMemberList가 lazy로딩이기 때문에 teamMemberList를 사용할 때마다 쿼리가 실행되기 때문이다.
+        List<TeamMember> teamMembers = teamMemberRepository.findByTeam(team); // 이렇게 해야 쿼리가 한 번만 실행된다.
+        List<User> users = new ArrayList<>();
+        for (TeamMember teamMember : teamMembers) {
+            users.add(teamMember.getUser());
+        }
+        return users;
     }
 
 }

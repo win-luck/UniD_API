@@ -23,4 +23,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     // 특정 팀장이 이끄는 팀들 조회
     List<Team> findByUser(User user);
+
+    List<Team> findByName(String teamName);
 }
