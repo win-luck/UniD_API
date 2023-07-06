@@ -1,7 +1,10 @@
 package com.springmvc.unid.dto;
 
+import com.springmvc.unid.domain.Requirement;
 import com.springmvc.unid.domain.Team;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class TeamDto {
@@ -11,6 +14,7 @@ public class TeamDto {
     private final String description;
     private final String university;
     private final String link;
+    private final List<Requirement> requirements;
 
     public TeamDto(Team team) {
         this.name = team.getName();
@@ -19,5 +23,6 @@ public class TeamDto {
         this.description = team.getDescription();
         this.university = team.getUniversity();
         this.link = team.getLink();
+        this.requirements = team.getRequirementList();
     }
 }

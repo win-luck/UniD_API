@@ -37,5 +37,15 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<teamMember> teamMembers; // 사용자가 소속된 팀 명단 (N:N)
+
+    public User(String userId, String name, String pw, String university, String major, String link) {
+        this.userId = userId;
+        this.name = name;
+        this.pw = pw;
+        this.university = university;
+        this.major = major;
+        this.link = link;
+    }
+
 }
 
