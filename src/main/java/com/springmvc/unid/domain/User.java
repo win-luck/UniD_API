@@ -1,51 +1,66 @@
 package com.springmvc.unid.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "user")
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
-    @Id
-    private String userId; // user id - 기본키
+    @Id @GeneratedValue
+    @Column(name = "user_id")
+    private Long id;
 
-    @Column(nullable = false)
+    private String loginId; // 사용자 id
+
     private String name; // 사용자 별명
 
-    @Column(nullable = false)
+    @JsonIgnore
     private String pw; // 사용자 비밀번호
 
-    @Column(nullable = false)
     private String university; // 사용자 소속 대학
 
-    @Column(nullable = false)
     private String major; // 사용자의 소속 학과
 
-    @Column(nullable = false)
     private String link; // 사용자의 링크
 
     @OneToMany(mappedBy = "user")
-    private List<userNotify> userNotifies; // 사용자가 가지고 있는 알림 명단 (N:N)
+    private List<userNotify> userNotifyList = new ArrayList<>(); // 사용자가 가지고 있는 알림 명단
 
     @OneToMany(mappedBy = "user")
-    private List<teamMember> teamMembers; // 사용자가 소속된 팀 명단 (N:N)
+    private List<teamMember> teamMemberList = new ArrayList<>(); // 사용자가 소속된 팀 명단
 
-    public User(String userId, String name, String pw, String university, String major, String link) {
-        this.userId = userId;
-        this.name = name;
-        this.pw = pw;
-        this.university = university;
-        this.major = major;
-        this.link = link;
+    // 생성 메서드
+    public static User createUser(String LoginId, String name, String pw, String university, String major, String link) {
+        User user = new User();
+        user.setLoginId(LoginId);
+        user.setName(name);
+        user.setPw(pw);
+        user.setUniversity(university);
+        user.setMajor(major);
+        user.setLink(link);
+        return user;
     }
 
+    // 비즈니스 로직
+    public void addUserNotify(userNotify userNotify) {
+        this.userNotifyList.add(userNotify);
+        userNotify.setUser(this);
+    } // 사용자가 알림을 수신할 때 사용
+
+    public void addTeamMember(teamMember teamMember) {
+        this.teamMemberList.add(teamMember);
+        teamMember.setUser(this);
+    } // 사용자가 팀에 가입할 때 사용
 }
 

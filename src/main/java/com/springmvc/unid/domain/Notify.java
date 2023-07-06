@@ -1,48 +1,57 @@
 package com.springmvc.unid.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @Table(name = "notify")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notify {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notify_id", nullable = false)
-    private Long notifyId; // 알림의 기본키
 
-    @Column(nullable = false)
+    @Id @GeneratedValue
+    @Column(name = "notify_id")
+    private Long id;
+
     private Long type; // 알림의 종류
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user; // 발신자의 id - user 테이블의 user_id 외래키
+    @JoinColumn(name = "user_id")
+    private User user; // 발신자의 id
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_name", nullable = false)
-    private Team team; // 발신자가 지원한(소속된) 팀명 - team 테이블의 name 외래키
+    @JoinColumn(name = "team_id")
+    private Team team; // 발신자가 지원한(소속된) 팀
 
-    @Column(nullable = false)
     private String contents; // 알림(지원서, 가입승인, 가입거절, 탈퇴, 종료) 내용
 
-    @Column(nullable = false)
     private String link; // 지원자(승인한 팀장)이 첨부한 링크
 
+    @JsonIgnore // 클라이언트가 접근할 필요가 없는 정보
     @OneToMany(mappedBy = "notify")
-    private List<userNotify> userNotifies; // 이 알림을 수신한 사용자 명단 (N:N)
+    private List<userNotify> userNotifies = new ArrayList<>(); // 이 알림을 수신한 사용자 명단
 
-    public Notify(Long type, User user, Team team, String contents, String link) {
-        this.type = type;
-        this.user = user;
-        this.team = team;
-        this.contents = contents;
-        this.link = link;
+    // 생성 메서드
+    public static Notify createNotify(Long type, User user, Team team, String contents, String link) {
+        Notify notify = new Notify();
+        notify.setType(type);
+        notify.setUser(user);
+        notify.setTeam(team);
+        notify.setContents(contents);
+        notify.setLink(link);
+        return notify;
     }
+
+    // 비즈니스 로직
+    public void setUserNotify(userNotify userNotify) {
+        this.userNotifies.add(userNotify);
+        userNotify.setNotify(this);
+    } // 이 알림을 수신한 사용자 추가 시 사용
 }
