@@ -39,7 +39,7 @@ public class Team {
     private List<Requirement> requirementList = new ArrayList<>(); // 팀원 모집 요구사항
 
     @OneToMany(mappedBy = "team")
-    private List<teamMember> teamMembersList = new ArrayList<>(); // 소속된 팀원 명단
+    private List<TeamMember> teamMembersList = new ArrayList<>(); // 소속된 팀원 명단
 
     // 생성 메서드
     public static Team createTeam(String name, User user, String oneLine, String description, String university, String link) {

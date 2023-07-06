@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Setter @Getter
 @Table(name = "team_member")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class teamMember { // Team과 User의 다대다 관계로 인해 생성된 테이블
+public class TeamMember { // Team과 User의 다대다 관계로 인해 생성된 테이블
 
     @Id @GeneratedValue
     @Column(name = "team_member_id")
@@ -27,4 +27,13 @@ public class teamMember { // Team과 User의 다대다 관계로 인해 생성�
     private User user; // 사용자 id - 외래키
 
     private LocalDate joinDate; // 팀 가입일
+
+    // 생성 메서드
+    public static TeamMember createTeamMember(Team team, User user, LocalDate joinDate) {
+        TeamMember teamMember = new TeamMember();
+        teamMember.setTeam(team);
+        teamMember.setUser(user);
+        teamMember.setJoinDate(joinDate);
+        return teamMember;
+    }
 }

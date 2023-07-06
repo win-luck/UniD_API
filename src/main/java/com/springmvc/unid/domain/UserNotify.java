@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Setter @Getter
 @Table(name = "user_notify")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class userNotify { // User와 Notify의 다대다 관계로 인해 생성된 테이블
+public class UserNotify { // User와 Notify의 다대다 관계로 인해 생성된 테이블
 
     @Id @GeneratedValue
     @Column(name = "user_notify_id")
@@ -29,8 +29,8 @@ public class userNotify { // User와 Notify의 다대다 관계로 인해 생성
     private LocalDate notifyDate; // 알림 수신 시간
 
     // 생성 메서드
-    public static userNotify createUserNotify(User user, Notify notify, LocalDate notifyDate) {
-        userNotify userNotify = new userNotify();
+    public static UserNotify createUserNotify(User user, Notify notify, LocalDate notifyDate) {
+        UserNotify userNotify = new UserNotify();
         userNotify.setUser(user);
         userNotify.setNotify(notify);
         userNotify.setNotifyDate(notifyDate);

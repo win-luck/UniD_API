@@ -36,7 +36,7 @@ public class Notify {
 
     @JsonIgnore // 클라이언트가 접근할 필요가 없는 정보
     @OneToMany(mappedBy = "notify")
-    private List<userNotify> userNotifies = new ArrayList<>(); // 이 알림을 수신한 사용자 명단
+    private List<UserNotify> userNotifies = new ArrayList<>(); // 이 알림을 수신한 사용자 명단
 
     // 생성 메서드
     public static Notify createNotify(Long type, User user, Team team, String contents, String link) {

@@ -35,10 +35,10 @@ public class User {
     private String link; // 사용자의 링크
 
     @OneToMany(mappedBy = "user")
-    private List<userNotify> userNotifyList = new ArrayList<>(); // 사용자가 가지고 있는 알림 명단
+    private List<UserNotify> userNotifyList = new ArrayList<>(); // 사용자가 가지고 있는 알림 명단
 
     @OneToMany(mappedBy = "user")
-    private List<teamMember> teamMemberList = new ArrayList<>(); // 사용자가 소속된 팀 명단
+    private List<TeamMember> teamMemberList = new ArrayList<>(); // 사용자가 소속된 팀 명단
 
     // 생성 메서드
     public static User createUser(String LoginId, String name, String pw, String university, String major, String link) {
