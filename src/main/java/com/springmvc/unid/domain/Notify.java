@@ -49,9 +49,4 @@ public class Notify {
         return notify;
     }
 
-    // 비즈니스 로직
-    public void setUserNotify(userNotify userNotify) {
-        this.userNotifies.add(userNotify);
-        userNotify.setNotify(this);
-    } // 이 알림을 수신한 사용자 추가 시 사용
 }

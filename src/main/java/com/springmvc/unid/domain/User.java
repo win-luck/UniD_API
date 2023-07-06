@@ -52,15 +52,5 @@ public class User {
         return user;
     }
 
-    // 비즈니스 로직
-    public void addUserNotify(userNotify userNotify) {
-        this.userNotifyList.add(userNotify);
-        userNotify.setUser(this);
-    } // 사용자가 알림을 수신할 때 사용
-
-    public void addTeamMember(teamMember teamMember) {
-        this.teamMemberList.add(teamMember);
-        teamMember.setUser(this);
-    } // 사용자가 팀에 가입할 때 사용
 }
 

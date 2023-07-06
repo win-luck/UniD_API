@@ -20,6 +20,8 @@ public class Team {
     @Column(name = "team_id")
     private Long id;
 
+    private String name; // 팀 이름
+
     // 각 팀 테이블은 팀장의 id를 외래키로 가짐
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -40,8 +42,9 @@ public class Team {
     private List<teamMember> teamMembersList = new ArrayList<>(); // 소속된 팀원 명단
 
     // 생성 메서드
-    public static Team createTeam(User user, String oneLine, String description, String university, String link) {
+    public static Team createTeam(String name, User user, String oneLine, String description, String university, String link) {
         Team team = new Team();
+        team.setName(name);
         team.setUser(user);
         team.setOneLine(oneLine);
         team.setDescription(description);
@@ -51,15 +54,10 @@ public class Team {
     }
 
     // 비즈니스 로직
-    public void setRequirement(Requirement requirement) {
+    public void addRequirement(Requirement requirement) {
         this.requirementList.add(requirement);
         requirement.setTeam(this);
     } // 팀원 모집 요구사항 추가 시 사용
-
-    public void setTeamMember(teamMember teamMember) {
-        this.teamMembersList.add(teamMember);
-        teamMember.setTeam(this);
-    } // 팀원 추가 시 사용
 
     public void setTeamLeader(User user) {
         this.user = user;
