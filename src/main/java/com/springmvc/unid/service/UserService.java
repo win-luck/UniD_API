@@ -45,7 +45,7 @@ public class UserService {
 
     // 중복 user 검증
     private void validateDuplicateUser(User user) {
-        Optional<User> findUsers = userRepository.findById(user.getId());
+        Optional<User> findUsers = userRepository.findByName(user.getName());
         if (findUsers.isPresent()) {
             throw new IllegalStateException("이미 존재하는 user입니다.");
         }
@@ -53,14 +53,22 @@ public class UserService {
 
     // user 탈퇴
     @Transactional
-    public void delete(User user) {
-        userRepository.delete(user);
+    public void delete(Long id) {
+        userRepository.deleteById(id);
     }
 
     // user 정보 수정
     @Transactional
-    public void update(User user) {
-        userRepository.save(user);
+    public void update(Long id, String newName, String newPw, String newUniv, String newMajor, String newLink) {
+        User findUser = userRepository.findById(id).orElse(null);
+        assert findUser != null;
+
+        findUser.setName(newName);
+        findUser.setPw(newPw);
+        findUser.setUniversity(newUniv);
+        findUser.setMajor(newMajor);
+        findUser.setLink(newLink);
+        userRepository.save(findUser);
     }
 
     // 전체 user 조회
@@ -78,7 +86,7 @@ public class UserService {
         }
     }
 
-    // 특정 팀에 현재 소속된 user 조회
+    // 특정 팀에 소속된 user 조회
     public List<User> findUsersByTeam(Team team) {
         // List<TeamMember> teamMembers = team.getTeamMembersList(); // 이렇게 하면 안되는 이유는 teamMemberList가 lazy로딩이기 때문에 teamMemberList를 사용할 때마다 쿼리가 실행되기 때문이다.
         List<TeamMember> teamMembers = teamMemberRepository.findByTeam(team); // 이렇게 해야 쿼리가 한 번만 실행된다.
@@ -99,4 +107,8 @@ public class UserService {
         return users;
     }
 
+    // 특정 대학에 소속된 user 조회
+    public List<User> findUsersByUniversity(String university) {
+        return userRepository.findByUniversity(university);
+    }
 }
