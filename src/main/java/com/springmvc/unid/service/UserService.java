@@ -1,9 +1,8 @@
 package com.springmvc.unid.service;
 
-import com.springmvc.unid.domain.Team;
-import com.springmvc.unid.domain.TeamMember;
-import com.springmvc.unid.domain.User;
+import com.springmvc.unid.domain.*;
 import com.springmvc.unid.repository.TeamMemberRepository;
+import com.springmvc.unid.repository.UserNotifyRepository;
 import com.springmvc.unid.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final UserNotifyRepository userNotifyRepository;
 
     // 로그인
     public Long login(String id, String password) {
@@ -85,6 +85,16 @@ public class UserService {
         List<User> users = new ArrayList<>();
         for (TeamMember teamMember : teamMembers) {
             users.add(teamMember.getUser());
+        }
+        return users;
+    }
+
+    // 특정 알림을 받은 user 조회
+    public List<User> findUsersByUserNotify(Notify notify) {
+        List<User> users = new ArrayList<>();
+        List<UserNotify> userNotifies = userNotifyRepository.findByNotify(notify);
+        for (UserNotify userNotify : userNotifies) {
+            users.add(userNotify.getUser());
         }
         return users;
     }
