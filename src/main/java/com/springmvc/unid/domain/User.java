@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) // DB가 알아서 값을 생성
     @Column(name = "user_id")
     private Long id;
 

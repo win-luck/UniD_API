@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserNotify { // User와 Notify의 다대다 관계로 인해 생성된 테이블
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_notify_id")
     private Long id;
 

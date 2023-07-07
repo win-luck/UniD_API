@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class TeamMember { // Team과 User의 다대다 관계로 인해 생성된 테이블
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "team_member_id")
     private Long id;
 
