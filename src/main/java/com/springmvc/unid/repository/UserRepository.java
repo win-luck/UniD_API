@@ -7,16 +7,16 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
-    // 1. id로 회원 조회
-    Optional<User> findById(String userId);
+public interface UserRepository extends JpaRepository<User, Long> {
+    // 회원 가입 및 정보 수정 - save(User user)
 
-    // 2. 회원 가입 - save(User user)가 내재되어 있음
+    // id로 회원 조회
+    Optional<User> findById(Long Id);
 
-    // 3. 회원 탈퇴 void deleteById(String userId);
+    // 회원 탈퇴
+    void deleteById(Long id);
 
-    // 4. 회원 정보 수정 - save(User user)가 내재되어 있음
+    // 회원 로그인에 필요
+    Optional<User> findByLoginIdAndPw(String loginId, String pw);
 
-    // 5. 회원 로그인
-    Optional<User> findByUserIdAndPw(String userId, String pw);
 }
