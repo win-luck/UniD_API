@@ -23,8 +23,9 @@ public class NotifyService {
 
     // 알림 생성
     @Transactional
-    public void create(Notify notify){
+    public Long create(Notify notify){
         notifyRepository.save(notify);
+        return notify.getId();
     }
 
     // 알림 삭제
