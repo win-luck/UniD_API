@@ -56,8 +56,8 @@ public class Team {
 
     // 비즈니스 로직
     public void addRequirement(Requirement requirement) {
-        this.requirementList.add(requirement);
         requirement.setTeam(this);
+        this.requirementList.add(requirement);
     } // 팀원 모집 요구사항 추가
 
     public void removeRequirement(Long id) {
@@ -71,7 +71,7 @@ public class Team {
 
     public void modifyRequirement(Long id, String position, Long n, String requireContents) {
         for(Requirement requirement : this.requirementList) {
-            if(Objects.equals(requirement.getId(), id)) {
+            if(id.equals(requirement.getId())) {
                 requirement.setPosition(position);
                 requirement.setN(n);
                 requirement.setRequireContents(requireContents);
@@ -80,7 +80,14 @@ public class Team {
         }
     } // 팀원 모집 요구사항 수정
 
-    // 요구사항(Requirement)은 팀이 소유하는 개념이므로 관련 비즈니스 로직을 팀 엔티티에 넣는다.
+    public Requirement getOneRequirement(Long id){
+        for(Requirement requirement : this.requirementList) {
+            if(Objects.equals(requirement.getId(), id)) {
+                return requirement;
+            }
+        }
+        return null;
+    } // 특정 요구사항 가져오기
 
     public void setTeamLeader(User user) {
         this.user = user;

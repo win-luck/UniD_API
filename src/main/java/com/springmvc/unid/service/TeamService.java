@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +24,10 @@ public class TeamService {
 
     // 팀 생성
     @Transactional
-    public void createTeam(Team team) {
+    public Long createTeam(Team team) {
         ValidateDuplicateTeam(team);
         teamRepository.save(team);
+        return team.getId();
     }
 
     // 중복 팀명 검증
@@ -38,8 +40,15 @@ public class TeamService {
 
     // 팀 정보 수정
     @Transactional
-    public void updateTeam(Team team) {
-        teamRepository.save(team);
+    public void update(Long id, String newName, String newOneLine, String newDescription, String newLink) {
+        Team findTeam = teamRepository.findById(id).orElse(null);
+        assert findTeam != null;
+
+        findTeam.setName(newName);
+        findTeam.setOneLine(newOneLine);
+        findTeam.setDescription(newDescription);
+        findTeam.setLink(newLink);
+        teamRepository.save(findTeam);
     }
 
     // 팀 삭제
@@ -48,27 +57,72 @@ public class TeamService {
         teamRepository.delete(team);
     }
 
-    // 특정 팀의 팀장 변경
+    // 팀에 특정 팀원 가입
     @Transactional
-    public void setTeamLeader(User user, Team team) {
-        team.setTeamLeader(user);
+    public void joinTeam(User user, Long teamId) {
+        Team team = teamRepository.findById(teamId).orElse(null);
+        ValidateDuplicateTeamMember(user, team);
+        TeamMember teamMember = TeamMember.createTeamMember(team, user , LocalDate.now());
+        teamMemberRepository.save(teamMember);
     }
 
-    // 특정 팀의 구인 요구사항 추가
+    // 이미 팀에 가입되어 있는 팀원인지 검증
+    public void ValidateDuplicateTeamMember(User user, Team team) {
+        List<TeamMember> findTeamMembers = teamMemberRepository.findByUser(user);
+        for (TeamMember teamMember : findTeamMembers) {
+            if (teamMember.getTeam().equals(team)) {
+                throw new IllegalStateException("이미 팀에 가입되어 있는 팀원입니다.");
+            }
+        }
+    }
+
+    // 팀에 특정 팀원 탈퇴
     @Transactional
-    public void addRequirement(Team team, Requirement requirement) {
+    public void leaveTeam(User user, Long teamId) {
+        Team team = teamRepository.findById(teamId).orElse(null);
+        List<TeamMember> findTeamMembers = teamMemberRepository.findByUser(user);
+        for (TeamMember teamMember : findTeamMembers) {
+            if (teamMember.getTeam().equals(team)) {
+                teamMemberRepository.delete(teamMember);
+            }
+        }
+    }
+
+    // 특정 팀의 팀장 변경
+    @Transactional
+    public void setTeamLeader(User user, Long teamId) {
+        teamRepository.findById(teamId).ifPresent(team -> team.setTeamLeader(user));
+    }
+
+    // 특정 팀의 구인 요구사항 추가 (팀장만 가능)
+    @Transactional
+    public void addRequirement(Long leaderId, Requirement requirement) {
+        Team team = requirement.getTeam();
+        if (!team.getUser().getId().equals(leaderId)) {
+            throw new IllegalStateException("팀장만 가능합니다.");
+        }
         team.addRequirement(requirement);
     }
 
-    // 특정 팀의 구인 요구사항 수정
+    // 특정 팀의 구인 요구사항 수정 (팀장만 가능)
     @Transactional
-    public void updateRequirement(Team team, Requirement requirement) {
-        team.modifyRequirement(requirement.getId(), requirement.getPosition(), requirement.getN(), requirement.getRequireContents());
+    public void updateRequirement(Long leaderId, Long reqId, Requirement after) {
+        // 팀장만 가능
+        Team team = after.getTeam();
+        if (!team.getUser().getId().equals(leaderId)) {
+            throw new IllegalStateException("팀장만 가능합니다.");
+        }
+        Requirement before = team.getOneRequirement(reqId);
+        team.modifyRequirement(before.getId(), after.getPosition(), after.getN(), after.getRequireContents());
     }
 
-    // 특정 팀의 구인 요구사항 제거
+    // 특정 팀의 구인 요구사항 제거 (팀장만 가능)
     @Transactional
-    public void removeRequirement(Team team, Requirement requirement) {
+    public void removeRequirement(Long leaderId, Requirement requirement) {
+        Team team = requirement.getTeam();
+        if (!team.getUser().getId().equals(leaderId)) {
+            throw new IllegalStateException("팀장만 가능합니다.");
+        }
         team.removeRequirement(requirement.getId());
     }
 
