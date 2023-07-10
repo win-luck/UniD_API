@@ -1,36 +1,73 @@
 package com.springmvc.unid.exception;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@AllArgsConstructor
+@AllArgsConstructor(access =  AccessLevel.PRIVATE)
 @Getter
 public enum ResponseCode {
 
-        // 400 Bad Request 잘못된 요청
+        /**
+         * 400 Bad Request
+         */
         BAD_REQUEST(HttpStatus.BAD_REQUEST, false, "잘못된 요청입니다."),
         NOT_TEAM_LEADER(HttpStatus.BAD_REQUEST, false,"팀장이 아닙니다."),
         USER_LOGIN_FAILED(HttpStatus.BAD_REQUEST, false,"로그인에 실패했습니다."),
 
-        // 404 Not Found 리소스를 찾을 수 없음
+        /**
+         * 404 NOT FOUND
+         */
         USER_NOT_FOUND(HttpStatus.NOT_FOUND, false,"User Not Found"),
         TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, false,"Team Not Found"),
         NOTIFY_NOT_FOUND(HttpStatus.NOT_FOUND, false,"Notify Not Found"),
         REQUIREMENT_NOT_FOUND(HttpStatus.NOT_FOUND, false,"Requirement Not Found"),
 
-        // 409 Conflict 중복된 리소스
+        /**
+         * 409 CONFLICT
+         */
         DUPLICATED_USER(HttpStatus.CONFLICT, false,"Duplicated User"),
         DUPLICATED_TEAM(HttpStatus.CONFLICT, false, "Duplicated Team"),
         DUPLICATED_NOTIFY(HttpStatus.CONFLICT, false, "Duplicated Notify"),
         DUPLICATED_TEAM_MEMBER(HttpStatus.CONFLICT, false, "Duplicated Team Member"),
 
-        // 500 Internal Server Error
-        INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, false,"Server Error");
+        /**
+         * 500 INTERNAL SERVER ERROR
+         */
+        INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, false,"Server Error"),
 
-        // 성공
+        /**
+         * 200 OK
+         */
+        SIGNIN_SUCCESS(HttpStatus.OK, true, "로그인 성공"),
+        USER_READ_SUCCESS(HttpStatus.OK, true, "유저 조회 성공"),
+        TEAM_READ_SUCCESS(HttpStatus.OK, true, "팀 조회 성공"),
+        TEAM_JOIN_SUCCESS(HttpStatus.OK, true, "팀 가입 성공"),
+        TEAM_MEMBER_READ_SUCCESS(HttpStatus.OK, true, "팀원 조회 성공"),
+        REQUIREMENT_READ_SUCCESS(HttpStatus.OK, true, "요구사항 조회 성공"),
+
+        NOTIFY_READ_SUCCESS(HttpStatus.OK, true, "알림 조회 성공"),
+        NOTIFY_SEND_SUCCESS(HttpStatus.OK, true, "알림 전송 성공"),
+
+        /**
+         *  201 Created
+         */
+        SIGNUP_SUCCESS(HttpStatus.CREATED, true, "회원가입 성공"),
+        TEAM_CREATE_SUCCESS(HttpStatus.CREATED, true, "팀 생성 성공"),
+        NOTIFY_CREATE_SUCCESS(HttpStatus.CREATED, true, "알림 생성 성공"),
+        REQUIREMENT_CREATE_SUCCESS(HttpStatus.CREATED, true, "요구사항 생성 성공"),
+
+        /**
+         * 204 No Content
+         */
+        LIST_EMPTY(HttpStatus.NO_CONTENT, true, "리스트가 비어있습니다.");
 
         private final HttpStatus httpStatus;
         private final Boolean success;
         private final String message;
+
+        public int getHttpStatusCode() {
+            return httpStatus.value();
+        }
 }
