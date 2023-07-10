@@ -1,5 +1,6 @@
 package com.springmvc.unid.service;
 
+import com.springmvc.unid.controller.dto.UserDto;
 import com.springmvc.unid.domain.*;
 import com.springmvc.unid.util.exception.CustomException;
 import com.springmvc.unid.util.exception.ResponseCode;
@@ -78,8 +79,8 @@ public class UserService {
     }
 
     // 특정 user 조회
-    public User findOne(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
+    public UserDto findOne(Long userId) {
+        return new UserDto(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
     }
 
     // 특정 팀에 소속된 user 조회
