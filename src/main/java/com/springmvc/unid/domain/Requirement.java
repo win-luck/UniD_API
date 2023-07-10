@@ -36,4 +36,10 @@ public class Requirement {
         requirement.setRequireContents(requireContents);
         return requirement;
     }
+
+    public void updateRequirement(Requirement re) {
+        this.position = re.position;
+        this.n = re.n;
+        this.requireContents = re.requireContents;
+    }
 }
