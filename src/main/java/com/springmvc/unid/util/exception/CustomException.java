@@ -1,4 +1,4 @@
-package com.springmvc.unid.exception;
+package com.springmvc.unid.util.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

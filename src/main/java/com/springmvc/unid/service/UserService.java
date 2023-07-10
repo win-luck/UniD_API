@@ -1,8 +1,8 @@
 package com.springmvc.unid.service;
 
 import com.springmvc.unid.domain.*;
-import com.springmvc.unid.exception.CustomException;
-import com.springmvc.unid.exception.ResponseCode;
+import com.springmvc.unid.util.exception.CustomException;
+import com.springmvc.unid.util.exception.ResponseCode;
 import com.springmvc.unid.repository.TeamMemberRepository;
 import com.springmvc.unid.repository.UserNotifyRepository;
 import com.springmvc.unid.repository.UserRepository;
