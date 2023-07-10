@@ -15,6 +15,7 @@ public enum ResponseCode {
         BAD_REQUEST(HttpStatus.BAD_REQUEST, false, "잘못된 요청입니다."),
         NOT_TEAM_LEADER(HttpStatus.BAD_REQUEST, false,"팀장이 아닙니다."),
         USER_LOGIN_FAILED(HttpStatus.BAD_REQUEST, false,"로그인에 실패했습니다."),
+        TEAM_LEADER_CANNOT_LEAVE(HttpStatus.BAD_REQUEST, false,"팀장은 팀에서 탈퇴할 수 없습니다."),
 
         /**
          * 404 NOT FOUND
