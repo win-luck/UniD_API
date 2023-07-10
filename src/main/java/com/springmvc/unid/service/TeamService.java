@@ -103,12 +103,13 @@ public class TeamService {
 
     // 특정 팀의 구인 요구사항 추가 (팀장만 가능)
     @Transactional
-    public void addRequirement(Long leaderId, Requirement requirement) {
+    public Long addRequirement(Long leaderId, Requirement requirement) {
         Team team = requirement.getTeam();
         if (!team.getUser().getId().equals(leaderId)) {
             throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         }
         team.addRequirement(requirement);
+        return requirement.getId();
     }
 
     // 특정 팀의 구인 요구사항 수정 (팀장만 가능)
@@ -118,8 +119,7 @@ public class TeamService {
         if (!team.getUser().getId().equals(leaderId)) {
             throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         }
-        Requirement before = team.getOneRequirement(reqId);
-        team.modifyRequirement(before.getId(), after.getPosition(), after.getN(), after.getRequireContents());
+        team.getOneRequirement(reqId).updateRequirement(after);
     }
 
     // 특정 팀의 구인 요구사항 제거 (팀장만 가능)
