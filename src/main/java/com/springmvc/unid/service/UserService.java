@@ -1,6 +1,8 @@
 package com.springmvc.unid.service;
 
 import com.springmvc.unid.domain.*;
+import com.springmvc.unid.exception.CustomException;
+import com.springmvc.unid.exception.ResponseCode;
 import com.springmvc.unid.repository.TeamMemberRepository;
 import com.springmvc.unid.repository.UserNotifyRepository;
 import com.springmvc.unid.repository.UserRepository;
@@ -28,10 +30,10 @@ public class UserService {
             if (findUsers.get().getPw().equals(password)) {
                 return findUsers.get().getId();
             } else {
-                throw new IllegalStateException("비밀번호가 일치하지 않습니다."); // Errorcode - USER_LOGIN_FAILED
+                throw new CustomException(ResponseCode.USER_LOGIN_FAILED);
             }
         } else {
-            throw new IllegalStateException("존재하지 않는 user입니다."); // Errorcode - USER_NOT_FOUND
+            throw new CustomException(ResponseCode.USER_NOT_FOUND);
         }
     }
 
@@ -47,7 +49,7 @@ public class UserService {
     private void validateDuplicateUser(User user) {
         Optional<User> findUsers = userRepository.findByName(user.getName());
         if (findUsers.isPresent()) {
-            throw new IllegalStateException("이미 존재하는 user입니다."); // Errorcode - DUPLICATED_USER
+            throw new CustomException(ResponseCode.DUPLICATED_USER);
         }
     }
 
@@ -60,8 +62,7 @@ public class UserService {
     // user 정보 수정
     @Transactional
     public void update(Long id, String newName, String newPw, String newUniv, String newMajor, String newLink) {
-        User findUser = userRepository.findById(id).orElse(null);
-        if(findUser == null) throw new IllegalStateException("존재하지 않는 user입니다."); // Errorcode - USER_NOT_FOUND
+        User findUser = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
 
         findUser.setName(newName);
         findUser.setPw(newPw);
@@ -73,19 +74,12 @@ public class UserService {
 
     // 전체 user 조회
     public List<User> findUsers() {
-        List<User> users = userRepository.findAll();
-        if (users.isEmpty()) throw new IllegalStateException("존재하지 않는 user입니다."); // Errorcode - USER_NOT_FOUND
-        return users;
+        return userRepository.findAll();
     }
 
     // 특정 user 조회
     public User findOne(Long userId) {
-        Optional<User> findUsers = userRepository.findById(userId);
-        if (findUsers.isPresent()) {
-            return findUsers.get();
-        } else {
-            throw new IllegalStateException("존재하지 않는 user입니다."); // Errorcode - USER_NOT_FOUND
-        }
+        return userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
     }
 
     // 특정 팀에 소속된 user 조회
@@ -96,7 +90,6 @@ public class UserService {
         for (TeamMember teamMember : teamMembers) {
             users.add(teamMember.getUser());
         }
-        if(users.isEmpty()) throw new IllegalStateException("해당 팀에 소속된 user가 없습니다."); // Errorcode - USER_NOT_FOUND
         return users;
     }
 
@@ -107,14 +100,11 @@ public class UserService {
         for (UserNotify userNotify : userNotifies) {
             users.add(userNotify.getUser());
         }
-        if(users.isEmpty()) throw new IllegalStateException("알림을 받은 user가 없습니다."); // Errorcode - USER_NOT_FOUND
         return users;
     }
 
     // 특정 대학에 소속된 user 조회
     public List<User> findUsersByUniversity(String university) {
-        List<User> users = userRepository.findByUniversity(university);
-        if(users.isEmpty()) throw new IllegalStateException("해당 대학에 소속된 user가 없습니다."); // Errorcode - USER_NOT_FOUND
-        return users;
+        return userRepository.findByUniversity(university);
     }
 }
