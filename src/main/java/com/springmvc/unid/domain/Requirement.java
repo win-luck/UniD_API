@@ -1,5 +1,6 @@
 package com.springmvc.unid.domain;
 
+import com.springmvc.unid.controller.dto.RequirementDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,18 +29,12 @@ public class Requirement {
     private String requireContents; // 구체적인 구인 요구사항
 
     // 생성 메서드
-    public static Requirement createRequirement(String position, Team team, Long n, String requireContents) {
+    public static Requirement createRequirement(RequirementDto requirementDto) {
         Requirement requirement = new Requirement();
-        requirement.setPosition(position);
-        requirement.setTeam(team);
-        requirement.setN(n);
-        requirement.setRequireContents(requireContents);
+        requirement.setPosition(requirementDto.getPosition());
+        requirement.setN(requirementDto.getN());
+        requirement.setRequireContents(requirementDto.getRequireContents());
         return requirement;
     }
 
-    public void updateRequirement(Requirement re) {
-        this.position = re.position;
-        this.n = re.n;
-        this.requireContents = re.requireContents;
-    }
 }

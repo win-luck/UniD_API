@@ -1,5 +1,7 @@
 package com.springmvc.unid.domain;
 
+import com.springmvc.unid.controller.dto.RequirementDto;
+import com.springmvc.unid.controller.dto.TeamDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,13 +56,21 @@ public class Team {
         return team;
     }
 
+    public void updateTeam(TeamDto teamDto) {
+        this.name = teamDto.getName();
+        this.oneLine = teamDto.getOneLine();
+        this.description = teamDto.getDescription();
+        this.university = teamDto.getUniversity();
+        this.link = teamDto.getLink();
+    } // 팀 정보 수정
+
     // 비즈니스 로직
     public void addRequirement(Requirement requirement) {
         requirement.setTeam(this);
         this.requirementList.add(requirement);
     } // 팀원 모집 요구사항 추가
 
-    public void removeRequirement(Long id) {
+    public void deleteRequirement(Long id) {
         for(Requirement requirement : this.requirementList) {
             if(Objects.equals(requirement.getId(), id)) {
                 this.requirementList.remove(requirement);
@@ -69,12 +79,12 @@ public class Team {
         }
     } // 팀원 모집 요구사항 삭제
 
-    public void modifyRequirement(Long id, String position, Long n, String requireContents) {
+    public void modifyRequirement(Long id, RequirementDto requirementDto) {
         for(Requirement requirement : this.requirementList) {
-            if(id.equals(requirement.getId())) {
-                requirement.setPosition(position);
-                requirement.setN(n);
-                requirement.setRequireContents(requireContents);
+            if (id.equals(requirement.getId())) {
+                requirement.setPosition(requirementDto.getPosition());
+                requirement.setN(requirementDto.getN());
+                requirement.setRequireContents(requirementDto.getRequireContents());
                 break;
             }
         }
