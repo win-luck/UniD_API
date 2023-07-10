@@ -1,6 +1,8 @@
 package com.springmvc.unid.service;
 
 import com.springmvc.unid.domain.*;
+import com.springmvc.unid.exception.CustomException;
+import com.springmvc.unid.exception.ResponseCode;
 import com.springmvc.unid.repository.TeamMemberRepository;
 import com.springmvc.unid.repository.UserNotifyRepository;
 import com.springmvc.unid.repository.UserRepository;
@@ -28,10 +30,10 @@ public class UserService {
             if (findUsers.get().getPw().equals(password)) {
                 return findUsers.get().getId();
             } else {
-                throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+                throw new CustomException(ResponseCode.USER_LOGIN_FAILED);
             }
         } else {
-            throw new IllegalStateException("존재하지 않는 user입니다.");
+            throw new CustomException(ResponseCode.USER_NOT_FOUND);
         }
     }
 
@@ -47,7 +49,7 @@ public class UserService {
     private void validateDuplicateUser(User user) {
         Optional<User> findUsers = userRepository.findByName(user.getName());
         if (findUsers.isPresent()) {
-            throw new IllegalStateException("이미 존재하는 user입니다.");
+            throw new CustomException(ResponseCode.DUPLICATED_USER);
         }
     }
 
@@ -60,8 +62,7 @@ public class UserService {
     // user 정보 수정
     @Transactional
     public void update(Long id, String newName, String newPw, String newUniv, String newMajor, String newLink) {
-        User findUser = userRepository.findById(id).orElse(null);
-        assert findUser != null;
+        User findUser = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
 
         findUser.setName(newName);
         findUser.setPw(newPw);
@@ -78,12 +79,7 @@ public class UserService {
 
     // 특정 user 조회
     public User findOne(Long userId) {
-        Optional<User> findUsers = userRepository.findById(userId);
-        if (findUsers.isPresent()) {
-            return findUsers.get();
-        } else {
-            throw new IllegalStateException("존재하지 않는 user입니다.");
-        }
+        return userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
     }
 
     // 특정 팀에 소속된 user 조회
