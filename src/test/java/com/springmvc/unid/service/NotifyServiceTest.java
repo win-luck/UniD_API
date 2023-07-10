@@ -104,8 +104,8 @@ public class NotifyServiceTest {
         userNotifyRepository.save(userNotify3);
 
         // when
-        List<Notify> userNotifies = notifyService.findAllByUserId(user1);
-        List<Notify> userNotifies2 = notifyService.findAllByUserId(user2);
+        List<Notify> userNotifies = notifyService.findAllByUser(user1);
+        List<Notify> userNotifies2 = notifyService.findAllByUser(user2);
         assertEquals(1, userNotifies.size());
         assertEquals(2, userNotifies2.size());
     }
@@ -131,7 +131,7 @@ public class NotifyServiceTest {
         notifyService.sendNotify(user2, notify);
 
         // then
-        List<Notify> userNotifies = notifyService.findAllByUserId(user2);
+        List<Notify> userNotifies = notifyService.findAllByUser(user2);
         assertEquals(1, userNotifies.size());
     }
 }

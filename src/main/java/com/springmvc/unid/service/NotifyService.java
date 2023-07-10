@@ -35,7 +35,7 @@ public class NotifyService {
     }
 
     // 특정 user가 받은 모든 알림 조회
-    public List<Notify> findAllByUserId(User user){
+    public List<Notify> findAllByUser(User user){
         List<UserNotify> userNotifies = userNotifyRepository.findByUser(user);
         List<Notify> notifies = new ArrayList<>();
         for(UserNotify userNotify : userNotifies){

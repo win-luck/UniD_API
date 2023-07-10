@@ -2,6 +2,7 @@ package com.springmvc.unid.service;
 
 import com.springmvc.unid.domain.*;
 import com.springmvc.unid.repository.*;
+import com.springmvc.unid.util.exception.CustomException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class UserServiceTest {
     TeamMemberRepository teamMemberRepository;
 
     @Test
-    public void 회원가입() throws Exception {
+    public void 회원가입(){
         //given
         User user = User.createUser("LoginId", "name", "password", "CAU", "CSE", "www.naver.com");
 
@@ -47,7 +48,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void 로그인() throws Exception {
+    public void 로그인(){
         //given
         User user = User.createUser("LoginId", "name", "password", "CAU", "CSE", "www.naver.com");
         userService.join(user);
@@ -59,8 +60,8 @@ public class UserServiceTest {
         assertEquals(user, userRepository.findById(id).orElse(null));
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void 중복_회원_예외() throws Exception {
+    @Test(expected = CustomException.class)
+    public void 중복_회원_예외(){
         //given
         User user1 = User.createUser("LoginId", "name", "password", "CAU", "CSE", "www.naver.com");
         User user2 = User.createUser("LoginId", "name", "password", "CAU", "CSE", "www.naver.com");
@@ -74,7 +75,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void 회원정보수정() throws Exception {
+    public void 회원정보수정(){
         //given
         User user = User.createUser("LoginId", "name", "password", "CAU", "CSE", "www.naver.com");
         userService.join(user);
@@ -87,7 +88,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void 회원탈퇴() throws Exception {
+    public void 회원탈퇴(){
         //given
         User user = User.createUser("LoginId", "name", "password", "CAU", "CSE", "www.naver.com");
         userService.join(user);
@@ -100,7 +101,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void 특정대학소속회원조회() throws Exception {
+    public void 특정대학소속회원조회(){
         //given
         User user1 = User.createUser("LoginId1", "name1", "password1", "CAU", "CSE", "www.naver.com");
         User user2 = User.createUser("LoginId2", "name2", "password2", "CAU", "CSE", "www.naver.com");
@@ -135,7 +136,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void 특정팀소속회원조회() {
+    public void 특정팀소속회원조회(){
         // given
         User user1 = User.createUser("LoginId1", "name1", "password1", "CAU", "CSE", "www.naver.com");
         User user2 = User.createUser("LoginId2", "name2", "password2", "CAU", "CSE", "www.naver.com");

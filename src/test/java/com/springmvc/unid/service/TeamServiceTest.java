@@ -2,6 +2,7 @@ package com.springmvc.unid.service;
 
 import com.springmvc.unid.domain.*;
 import com.springmvc.unid.repository.*;
+import com.springmvc.unid.util.exception.CustomException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class TeamServiceTest {
         assertEquals(team, teamRepository.findById(id).orElse(null));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = CustomException.class)
     public void 중복_팀명_예외(){
         // given
         User user1 = User.createUser("LoginId", "name", "password", "CAU", "CSE", "www.naver.com");
@@ -80,7 +81,7 @@ public class TeamServiceTest {
         teamRepository.save(team2);
 
         // when
-        teamService.deleteTeam(team);
+        teamService.deleteTeam(team, user1);
 
         // then
         List<Team> findTeam = teamRepository.findByName("team1");
@@ -159,7 +160,7 @@ public class TeamServiceTest {
         teamRepository.save(team);
 
         // when
-        teamService.setTeamLeader(user2, team.getId());
+        teamService.setTeamLeader(user1, user2, team.getId());
 
         // then
         assertEquals(user2, team.getUser());
@@ -181,7 +182,7 @@ public class TeamServiceTest {
         assertEquals(1, team.getRequirementList().size());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = CustomException.class)
     public void 팀장만_요구사항_접근_가능(){
         // given
         User user1 = User.createUser("LoginId1", "name1", "password1", "CAU", "CSE", "www.naver.com");
@@ -210,11 +211,11 @@ public class TeamServiceTest {
         teamRepository.save(team);
 
         Requirement re = Requirement.createRequirement("backend", team, 3L, "스프링 경험자");
-        teamService.addRequirement(user1.getId(), re);
+        Long id = teamService.addRequirement(user1.getId(), re);
 
         // when
         Requirement re2 = Requirement.createRequirement("AI", team, 1L, "머신러닝 우대");
-        teamService.updateRequirement(user1.getId(), re.getId(), re2);
+        teamService.updateRequirement(user1.getId(), id, re2);
 
         // then
         assertEquals("AI", team.getOneRequirement(re.getId()).getPosition());
