@@ -34,7 +34,7 @@ public class TeamService {
     public void ValidateDuplicateTeam(Team team) {
         List<Team> findTeams = teamRepository.findByName(team.getName());
         if (!findTeams.isEmpty()) {
-            throw new IllegalStateException("이미 존재하는 팀입니다.");
+            throw new IllegalStateException("이미 존재하는 팀입니다."); // Errorcode - DUPLICATED_TEAM
         }
     }
 
@@ -42,7 +42,7 @@ public class TeamService {
     @Transactional
     public void update(Long id, String newName, String newOneLine, String newDescription, String newLink) {
         Team findTeam = teamRepository.findById(id).orElse(null);
-        assert findTeam != null;
+        if(findTeam == null) throw new IllegalStateException("존재하지 않는 팀입니다."); // Errorcode - TEAM_NOT_FOUND
 
         findTeam.setName(newName);
         findTeam.setOneLine(newOneLine);
@@ -51,9 +51,10 @@ public class TeamService {
         teamRepository.save(findTeam);
     }
 
-    // 팀 삭제
+    // 팀 삭제 (팀장만 가능)
     @Transactional
-    public void deleteTeam(Team team) {
+    public void deleteTeam(Team team, User leader) {
+        if(!team.getUser().equals(leader)) throw new IllegalStateException("팀장만 가능합니다."); // Errorcode - NOT_TEAM_LEADER
         teamRepository.delete(team);
     }
 
@@ -88,10 +89,16 @@ public class TeamService {
         }
     }
 
-    // 특정 팀의 팀장 변경
+    // 특정 팀의 팀장 변경 (팀장만 가능)
     @Transactional
-    public void setTeamLeader(User user, Long teamId) {
-        teamRepository.findById(teamId).ifPresent(team -> team.setTeamLeader(user));
+    public void setTeamLeader(User leader, User user, Long teamId) {
+        Team team = teamRepository.findById(teamId).orElse(null);
+        if(team == null) throw new IllegalStateException("존재하지 않는 팀입니다."); // Errorcode - TEAM_NOT_FOUND
+        if(!team.getUser().equals(leader)) {
+            throw new IllegalStateException("팀장만 가능합니다."); // Errorcode - NOT_TEAM_LEADER
+        }
+        team.setTeamLeader(user);
+        teamRepository.save(team);
     }
 
     // 특정 팀의 구인 요구사항 추가 (팀장만 가능)
@@ -99,7 +106,7 @@ public class TeamService {
     public void addRequirement(Long leaderId, Requirement requirement) {
         Team team = requirement.getTeam();
         if (!team.getUser().getId().equals(leaderId)) {
-            throw new IllegalStateException("팀장만 가능합니다.");
+            throw new IllegalStateException("팀장만 가능합니다."); // Errorcode - NOT_TEAM_LEADER
         }
         team.addRequirement(requirement);
     }
@@ -110,7 +117,7 @@ public class TeamService {
         // 팀장만 가능
         Team team = after.getTeam();
         if (!team.getUser().getId().equals(leaderId)) {
-            throw new IllegalStateException("팀장만 가능합니다.");
+            throw new IllegalStateException("팀장만 가능합니다."); // Errorcode - NOT_TEAM_LEADER
         }
         Requirement before = team.getOneRequirement(reqId);
         team.modifyRequirement(before.getId(), after.getPosition(), after.getN(), after.getRequireContents());
@@ -121,19 +128,23 @@ public class TeamService {
     public void removeRequirement(Long leaderId, Requirement requirement) {
         Team team = requirement.getTeam();
         if (!team.getUser().getId().equals(leaderId)) {
-            throw new IllegalStateException("팀장만 가능합니다.");
+            throw new IllegalStateException("팀장만 가능합니다."); // Errorcode - NOT_TEAM_LEADER
         }
         team.removeRequirement(requirement.getId());
     }
 
     // user의 대학 소속 팀 조회
     public List<Team> findTeamByUniv(String university) {
-        return teamRepository.findByUniversity(university);
+        List<Team> teams = teamRepository.findByUniversity(university);
+        if(teams.isEmpty()) throw new IllegalStateException("해당 대학에 소속된 팀이 없습니다."); // Errorcode - TEAM_NOT_FOUND
+        return teams;
     }
 
     // user가 팀장인 팀 조회
     public List<Team> findTeamByLeader(User user) {
-        return teamRepository.findByUser(user);
+        List<Team> teams = teamRepository.findByUser(user);
+        if(teams.isEmpty()) throw new IllegalStateException("팀장인 팀이 없습니다."); // Errorcode - TEAM_NOT_FOUND
+        return teams;
     }
 
     // user가 현재 소속된 팀 조회
@@ -144,6 +155,7 @@ public class TeamService {
         for (TeamMember teamMember : TeamMembers) {
             teams.add(teamMember.getTeam());
         }
+        if(teams.isEmpty()) throw new IllegalStateException("현재 소속된 팀이 없습니다."); // Errorcode - TEAM_NOT_FOUND
         return teams;
     }
 

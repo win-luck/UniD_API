@@ -41,6 +41,7 @@ public class NotifyService {
         for(UserNotify userNotify : userNotifies){
             notifies.add(userNotify.getNotify());
         }
+        if(notifies.isEmpty()) throw new IllegalStateException("존재하지 않는 알림입니다."); // Errorcode - NOT_FOUND_NOTIFY
         return notifies;
     }
 
@@ -50,6 +51,7 @@ public class NotifyService {
         UserNotify userNotify = UserNotify.createUserNotify(user, notify, LocalDate.now());
         userNotify.setUser(user);
         userNotify.setNotify(notify);
+        if(userNotifyRepository.findByUserAndNotify(user, notify).isPresent()) throw new IllegalStateException("이미 존재하는 알림입니다."); // Errorcode - DUPLICATED_NOTIFY
         userNotifyRepository.save(userNotify);
     }
 
