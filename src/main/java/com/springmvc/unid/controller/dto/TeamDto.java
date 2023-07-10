@@ -19,6 +19,7 @@ public class TeamDto {
 
     private Long teamId;
     private String name;
+    private String user;
     private String oneLine;
     private String description;
     private String university;
@@ -28,6 +29,7 @@ public class TeamDto {
     public TeamDto(Team team) {
         this.teamId = team.getId();
         this.name = team.getName();
+        this.user = team.getUser().getName();
         this.oneLine = team.getOneLine();
         this.description = team.getDescription();
         this.university = team.getUniversity();
