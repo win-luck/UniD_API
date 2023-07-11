@@ -2,6 +2,7 @@ package com.springmvc.unid.controller.dto;
 
 import com.springmvc.unid.domain.User;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * UserDto의 용도
@@ -12,6 +13,7 @@ import lombok.Data;
  * 5. user가 받은 알림 조회를 위해 클라이언트가 서버에게 보내는 Request
  */
 @Data
+@NoArgsConstructor
 public class UserDto {
 
     private Long userId;

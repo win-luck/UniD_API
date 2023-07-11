@@ -2,6 +2,7 @@ package com.springmvc.unid.controller.dto;
 
 import com.springmvc.unid.domain.Team;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import static java.util.stream.Collectors.toList;
  * 4. 팀 삭제 Request/Response
  */
 @Data
+@NoArgsConstructor
 public class TeamDto {
 
     private Long teamId;

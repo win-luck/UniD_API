@@ -2,6 +2,7 @@ package com.springmvc.unid.controller.dto;
 
 import com.springmvc.unid.domain.Requirement;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * RequirementDto의 용도
@@ -11,6 +12,7 @@ import lombok.Data;
  * 4. 팀장이 파트별 요구사항 조회 결과 response
  */
 @Data
+@NoArgsConstructor
 public class RequirementDto {
 
     private Long requirementId;
