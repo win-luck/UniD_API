@@ -3,6 +3,7 @@ package com.springmvc.unid.service;
 import com.springmvc.unid.controller.dto.RequirementDto;
 import com.springmvc.unid.controller.dto.TeamDto;
 import com.springmvc.unid.controller.dto.UserDto;
+import com.springmvc.unid.controller.dto.request.RequestCreateTeamDto;
 import com.springmvc.unid.domain.Requirement;
 import com.springmvc.unid.domain.Team;
 import com.springmvc.unid.domain.User;
@@ -32,6 +33,15 @@ public class TeamService {
     public TeamDto findOne(Long id) {
         Team team = teamRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
         return new TeamDto(team);
+    }
+
+    public List<TeamDto> findAll() {
+        List<Team> teams = teamRepository.findAll();
+        List<TeamDto> teamDtos = new ArrayList<>();
+        for (Team team : teams) {
+            teamDtos.add(new TeamDto(team));
+        }
+        return teamDtos;
     }
 
     // user가 현재 소속된 팀 조회
@@ -68,11 +78,13 @@ public class TeamService {
 
     // 팀 생성
     @Transactional
-    public Long createTeam(TeamDto teamDto) {
+    public Long createTeam(RequestCreateTeamDto teamDto) {
         Team team = Team.createTeam(teamDto.getName(), userRepository.findByName(teamDto.getUser()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)),
                 teamDto.getOneLine(), teamDto.getDescription(), teamDto.getLink(), teamDto.getUniversity());
         ValidateDuplicateTeam(team);
+        team.setTeamLeader(team.getUser());
         teamRepository.save(team);
+        teamMemberRepository.save(TeamMember.createTeamMember(team, team.getUser(), LocalDate.now()));
         return team.getId();
     }
 
@@ -86,11 +98,12 @@ public class TeamService {
 
     // 팀 정보 수정 (팀장만 가능)
     @Transactional
-    public void update(Long id, TeamDto teamDto, Long userId) {
+    public Long update(Long id, TeamDto teamDto, Long userId) {
         Team findTeam = teamRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
         if(!findTeam.getUser().getId().equals(userId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         findTeam.updateTeam(teamDto);
         teamRepository.save(findTeam);
+        return findTeam.getId();
     }
 
     // 팀 삭제 (팀장만 가능)
@@ -112,13 +125,19 @@ public class TeamService {
         return userDtos;
     }
 
+    // 특정 팀의 팀장 조회
+    public UserDto findTeamLeader(Long teamId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+        return new UserDto(team.getUser());
+    }
+
     // 팀에 특정 팀원 가입
     @Transactional
     public void joinTeam(Long userId, Long teamId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
         ValidateDuplicateTeamMember(user, team);
-        TeamMember teamMember = TeamMember.createTeamMember(team, user , LocalDate.now());
+        TeamMember teamMember = TeamMember.createTeamMember(team, user, LocalDate.now());
         teamMemberRepository.save(teamMember);
     }
 

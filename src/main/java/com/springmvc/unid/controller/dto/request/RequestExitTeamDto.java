@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UpdateTeamLeaderRequestDto {
-    private Long leaderId;
-    private Long nextId;
+public class RequestExitTeamDto { // 팀 탈퇴 요청
+    private Long teamId;
 }
