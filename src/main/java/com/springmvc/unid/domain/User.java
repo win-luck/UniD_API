@@ -1,7 +1,7 @@
 package com.springmvc.unid.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.springmvc.unid.controller.dto.request.RequestNewUserDto;
+import com.springmvc.unid.controller.dto.request.RequestCreateUserDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,14 +54,14 @@ public class User {
     }
 
     // 생성 메서드(컨트롤러 회원가입용)
-    public static User createUser(RequestNewUserDto requestNewUserDto) {
+    public static User createUser(RequestCreateUserDto requestCreateUserDto) {
         User user = new User();
-        user.setLoginId(requestNewUserDto.getLoginId());
-        user.setName(requestNewUserDto.getName());
-        user.setPw(requestNewUserDto.getPw());
-        user.setUniversity(requestNewUserDto.getUniversity());
-        user.setMajor(requestNewUserDto.getMajor());
-        user.setLink(requestNewUserDto.getLink());
+        user.setLoginId(requestCreateUserDto.getLoginId());
+        user.setName(requestCreateUserDto.getName());
+        user.setPw(requestCreateUserDto.getPw());
+        user.setUniversity(requestCreateUserDto.getUniversity());
+        user.setMajor(requestCreateUserDto.getMajor());
+        user.setLink(requestCreateUserDto.getLink());
         return user;
     }
 
