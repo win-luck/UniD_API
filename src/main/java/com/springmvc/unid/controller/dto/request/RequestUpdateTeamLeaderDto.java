@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RequestLoginDto { // 로그인 요청
-    private String loginId;
-    private String pw;
+public class RequestUpdateTeamLeaderDto { // 팀장 변경 요청
+    private Long leaderId;
+    private Long nextId;
 }

@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RequestLoginDto { // 로그인 요청
-    private String loginId;
-    private String pw;
+public class RequestUnivMemberDto { // 대학 내 팀 조회 등을 위한 대학명 요청
+    private String university;
 }
