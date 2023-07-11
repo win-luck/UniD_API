@@ -2,12 +2,14 @@ package com.springmvc.unid.controller.dto.request;
 
 import com.springmvc.unid.domain.Notify;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * RequestCreateNotifyDto의 용도
  * 알림 생성 요청 객체 (request)
  */
 @Data
+@NoArgsConstructor
 public class RequestCreateNotifyDto {
 
     private Long type; // 알림의 종류

@@ -51,6 +51,17 @@ public enum ResponseCode {
         NOTIFY_READ_SUCCESS(HttpStatus.OK, true, "알림 조회 성공"),
         NOTIFY_SEND_SUCCESS(HttpStatus.OK, true, "알림 전송 성공"),
 
+        USER_DELETE_SUCCESS(HttpStatus.OK, true, "유저 탈퇴 성공"),
+        TEAM_DELETE_SUCCESS(HttpStatus.OK, true, "팀 삭제 성공"),
+        TEAM_LEAVE_SUCCESS(HttpStatus.OK, true, "팀 탈퇴 성공"),
+        REQUIREMENT_DELETE_SUCCESS(HttpStatus.OK, true, "요구사항 삭제 성공"),
+        NOTIFY_DELETE_SUCCESS(HttpStatus.OK, true, "알림 삭제 성공"),
+
+        USER_UPDATE_SUCCESS(HttpStatus.OK, true, "유저 정보 수정 성공"),
+        TEAM_UPDATE_SUCCESS(HttpStatus.OK, true, "팀 정보 수정 성공"),
+        REQUIREMENT_UPDATE_SUCCESS(HttpStatus.OK, true, "요구사항 정보 수정 성공"),
+
+
         /**
          *  201 Created
          */

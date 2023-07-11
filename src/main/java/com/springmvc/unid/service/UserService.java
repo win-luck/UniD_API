@@ -1,6 +1,8 @@
 package com.springmvc.unid.service;
 
+import com.springmvc.unid.controller.dto.TeamDto;
 import com.springmvc.unid.controller.dto.UserDto;
+import com.springmvc.unid.controller.dto.request.RequestNewUserDto;
 import com.springmvc.unid.domain.*;
 import com.springmvc.unid.util.exception.CustomException;
 import com.springmvc.unid.util.exception.ResponseCode;
@@ -21,8 +23,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final TeamMemberRepository teamMemberRepository;
-    private final UserNotifyRepository userNotifyRepository;
 
     // 로그인
     public Long login(String id, String password) {
@@ -40,7 +40,8 @@ public class UserService {
 
     // user 가입
     @Transactional
-    public Long join(User user) {
+    public Long join(RequestNewUserDto userDto) {
+        User user = User.createUser(userDto);
         validateDuplicateUser(user);
         userRepository.save(user);
         return user.getId();
@@ -48,8 +49,9 @@ public class UserService {
 
     // 중복 user 검증
     private void validateDuplicateUser(User user) {
-        Optional<User> findUsers = userRepository.findByName(user.getName());
-        if (findUsers.isPresent()) {
+        Optional<User> findUserByLoginId = userRepository.findByLoginId(user.getLoginId());
+        Optional<User> findUserByName = userRepository.findByName(user.getName());
+        if (findUserByName.isPresent() || findUserByLoginId.isPresent()) {
             throw new CustomException(ResponseCode.DUPLICATED_USER);
         }
     }
@@ -62,20 +64,20 @@ public class UserService {
 
     // user 정보 수정
     @Transactional
-    public void update(Long id, String newName, String newPw, String newUniv, String newMajor, String newLink) {
+    public void update(Long id, String newName, String newUniv, String newMajor, String newLink) {
         User findUser = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-
-        findUser.setName(newName);
-        findUser.setPw(newPw);
-        findUser.setUniversity(newUniv);
-        findUser.setMajor(newMajor);
-        findUser.setLink(newLink);
+        findUser.update(newName, newUniv, newMajor, newLink);
         userRepository.save(findUser);
     }
 
     // 전체 user 조회
-    public List<User> findUsers() {
-        return userRepository.findAll();
+    public List<UserDto> findUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserDto> userDtos = new ArrayList<>();
+        for (User user : users) {
+            userDtos.add(new UserDto(user));
+        }
+        return userDtos;
     }
 
     // 특정 user 조회
@@ -83,18 +85,7 @@ public class UserService {
         return new UserDto(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
     }
 
-    // 특정 팀에 소속된 user 조회
-    public List<User> findUsersByTeam(Team team) {
-        // List<TeamMember> teamMembers = team.getTeamMembersList(); // 이렇게 하면 안되는 이유는 teamMemberList가 lazy로딩이기 때문에 teamMemberList를 사용할 때마다 쿼리가 실행되기 때문이다.
-        List<TeamMember> teamMembers = teamMemberRepository.findByTeam(team); // 이렇게 해야 쿼리가 한 번만 실행된다.
-        List<User> users = new ArrayList<>();
-        for (TeamMember teamMember : teamMembers) {
-            users.add(teamMember.getUser());
-        }
-        return users;
-    }
-
-    // 특정 알림을 받은 user 조회
+    /*// 특정 알림을 받은 user 조회
     public List<User> findUsersByUserNotify(Notify notify) {
         List<User> users = new ArrayList<>();
         List<UserNotify> userNotifies = userNotifyRepository.findByNotify(notify);
@@ -102,10 +93,15 @@ public class UserService {
             users.add(userNotify.getUser());
         }
         return users;
-    }
+    } */
 
-    // 특정 대학에 소속된 user 조회
-    public List<User> findUsersByUniversity(String university) {
-        return userRepository.findByUniversity(university);
-    }
+    /*// 특정 대학에 소속된 user 조회
+    public List<UserDto> findUsersByUniversity(String university) {
+        List<User> users = userRepository.findByUniversity(university);
+        List<UserDto> userDtos = new ArrayList<>();
+        for (User user : users) {
+            userDtos.add(new UserDto(user));
+        }
+        return userDtos;
+    }*/
 }

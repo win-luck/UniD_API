@@ -101,6 +101,17 @@ public class TeamService {
         teamRepository.delete(team);
     }
 
+    // 특정 팀의 팀원 조회
+    public List<UserDto> findTeamMember(Long teamId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+        List<TeamMember> teamMembers = teamMemberRepository.findByTeam(team);
+        List<UserDto> userDtos = new ArrayList<>();
+        for (TeamMember teamMember : teamMembers) {
+            userDtos.add(new UserDto(teamMember.getUser()));
+        }
+        return userDtos;
+    }
+
     // 팀에 특정 팀원 가입
     @Transactional
     public void joinTeam(Long userId, Long teamId) {

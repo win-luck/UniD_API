@@ -1,6 +1,7 @@
 package com.springmvc.unid.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.springmvc.unid.controller.dto.request.RequestNewUserDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +41,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<TeamMember> teamMemberList = new ArrayList<>(); // 사용자가 소속된 팀 명단
 
-    // 생성 메서드
+    // 생성 메서드 (테스트코드용)
     public static User createUser(String LoginId, String name, String pw, String university, String major, String link) {
         User user = new User();
         user.setLoginId(LoginId);
@@ -52,5 +53,25 @@ public class User {
         return user;
     }
 
+    // 생성 메서드(컨트롤러 회원가입용)
+    public static User createUser(RequestNewUserDto requestNewUserDto) {
+        User user = new User();
+        user.setLoginId(requestNewUserDto.getLoginId());
+        user.setName(requestNewUserDto.getName());
+        user.setPw(requestNewUserDto.getPw());
+        user.setUniversity(requestNewUserDto.getUniversity());
+        user.setMajor(requestNewUserDto.getMajor());
+        user.setLink(requestNewUserDto.getLink());
+        return user;
+    }
+
+    // 비즈니스 로직
+    // 사용자 정보 수정
+    public void update(String name, String university, String major, String link) {
+        this.name = name;
+        this.university = university;
+        this.major = major;
+        this.link = link;
+    }
 }
 

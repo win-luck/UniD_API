@@ -23,8 +23,8 @@ public class ApiResponse<T> {
         this.header = header;
     }
 
-    public static <T> ApiResponse<T> success(T data){
-        return new ApiResponse<T>(new ApiHeader(SUCCESS, "SUCCESS"), new ApiBody(data, null));
+    public static <T> ApiResponse<T> success(T data, String message){
+        return new ApiResponse<T>(new ApiHeader(SUCCESS, "SUCCESS"), new ApiBody(data, message));
     }
 
     public static <T> ApiResponse<T> fail(ResponseCode responseCode){
