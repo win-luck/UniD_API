@@ -2,12 +2,11 @@ package com.springmvc.unid.service;
 
 import com.springmvc.unid.controller.dto.TeamDto;
 import com.springmvc.unid.controller.dto.UserDto;
-import com.springmvc.unid.controller.dto.request.RequestNewUserDto;
+import com.springmvc.unid.controller.dto.request.RequestCreateUserDto;
 import com.springmvc.unid.domain.*;
 import com.springmvc.unid.util.exception.CustomException;
 import com.springmvc.unid.util.exception.ResponseCode;
 import com.springmvc.unid.repository.TeamMemberRepository;
-import com.springmvc.unid.repository.UserNotifyRepository;
 import com.springmvc.unid.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     // 로그인
     public Long login(String id, String password) {
@@ -40,7 +40,7 @@ public class UserService {
 
     // user 가입
     @Transactional
-    public Long join(RequestNewUserDto userDto) {
+    public Long join(RequestCreateUserDto userDto) {
         User user = User.createUser(userDto);
         validateDuplicateUser(user);
         userRepository.save(user);
@@ -83,6 +83,16 @@ public class UserService {
     // 특정 user 조회
     public UserDto findOne(Long userId) {
         return new UserDto(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
+    }
+
+    // 특정 user가 소속된 팀 조회
+    public List<TeamDto> findTeamsByUserId(Long userId) {
+        List<TeamMember> teams = teamMemberRepository.findByUser(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
+        List<TeamDto> teamDtos = new ArrayList<>();
+        for (TeamMember team : teams) {
+            teamDtos.add(new TeamDto(team.getTeam()));
+        }
+        return teamDtos;
     }
 
     /*// 특정 알림을 받은 user 조회
