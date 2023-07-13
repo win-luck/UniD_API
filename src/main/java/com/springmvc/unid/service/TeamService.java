@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -90,8 +91,8 @@ public class TeamService {
 
     // 중복 팀명 검증
     public void ValidateDuplicateTeam(Team team) {
-        List<Team> findTeams = teamRepository.findByName(team.getName());
-        if (!findTeams.isEmpty()) { // 중복된 팀명이 존재하면 예외 발생
+        Optional<Team> findTeam = teamRepository.findByName(team.getName());
+        if (findTeam.isPresent()) {
             throw new CustomException(ResponseCode.DUPLICATED_TEAM);
         }
     }
