@@ -2,10 +2,9 @@ package com.springmvc.unid.controller;
 
 import com.springmvc.unid.controller.dto.TeamDto;
 import com.springmvc.unid.controller.dto.UserDto;
-import com.springmvc.unid.controller.dto.request.RequestExitTeamDto;
-import com.springmvc.unid.controller.dto.request.RequestJoinTeamDto;
-import com.springmvc.unid.controller.dto.request.RequestLoginDto;
-import com.springmvc.unid.controller.dto.request.RequestCreateUserDto;
+import com.springmvc.unid.controller.dto.request.*;
+import com.springmvc.unid.controller.dto.response.NotifyDto;
+import com.springmvc.unid.service.NotifyService;
 import com.springmvc.unid.service.TeamService;
 import com.springmvc.unid.service.UserService;
 import com.springmvc.unid.util.api.ApiResponse;
@@ -21,6 +20,7 @@ public class UserController {
 
     private final UserService userService;
     private final TeamService teamService;
+    private final NotifyService notifyService;
 
     // 로그인 V
     @PostMapping("/api/users/login")
@@ -72,6 +72,28 @@ public class UserController {
         teamService.leaveTeam(id, requestExitTeamDto.getTeamId());
         return ApiResponse.success(requestExitTeamDto.getTeamId(), ResponseCode.TEAM_LEAVE_SUCCESS.getMessage());
     }
+
+    // user가 자신이 받은 알림을 조회
+    @GetMapping("/api/users/{id}/notifies")
+    public ApiResponse<Long> notify(@PathVariable("id") Long id){
+        List<NotifyDto> notifyDtoList = notifyService.findAllByUser(userService.findOne(id));
+        return ApiResponse.success(1L, ResponseCode.NOTIFY_READ_SUCCESS.getMessage());
+    }
+
+    // user가 자신이 보낸 알림을 조회
+    @GetMapping("/api/users/{id}/notifies/sent")
+    public ApiResponse<Long> notifySent(@PathVariable("id") Long id){
+        List<NotifyDto> notifyDtoList = notifyService.findAllBySender(userService.findOne(id));
+        return ApiResponse.success(1L, ResponseCode.NOTIFY_READ_SUCCESS.getMessage());
+    }
+
+    // user가 자신이 받은 알림을 삭제
+    @PostMapping("/api/users/{id}/notifies")
+    public ApiResponse<Long> deleteMyNotify(@PathVariable("id") Long id, @RequestBody RequestDeleteNotifyDto requestDeleteNotifyDto){
+        notifyService.deleteNotify(id, requestDeleteNotifyDto.getNotifyId());
+        return ApiResponse.success(1L, ResponseCode.NOTIFY_DELETE_SUCCESS.getMessage());
+    }
+
 
     // 회원 정보 조회 V
     @GetMapping("/api/users/{id}")
