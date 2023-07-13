@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class ResponseNotifyDto {
+public class NotifyDto {
 
         private Long notifyId; // 알림의 id
         private Long type; // 알림의 종류
@@ -19,7 +19,7 @@ public class ResponseNotifyDto {
         private String contents; // 알림의 내용
         private String link; // 알림의 첨부 링크
 
-        public ResponseNotifyDto(Notify notify) {
+        public NotifyDto(Notify notify) {
                 this.notifyId = notify.getId();
                 this.type = notify.getType();
                 this.sender = notify.getUser().getName();
