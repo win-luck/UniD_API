@@ -1,4 +1,4 @@
-package com.springmvc.unid.controller.dto.response;
+package com.springmvc.unid.controller.dto;
 
 import com.springmvc.unid.domain.Notify;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.springmvc.unid.service;
 
 import com.springmvc.unid.controller.dto.UserDto;
-import com.springmvc.unid.controller.dto.response.NotifyDto;
+import com.springmvc.unid.controller.dto.NotifyDto;
 import com.springmvc.unid.domain.Notify;
 import com.springmvc.unid.domain.Team;
 import com.springmvc.unid.domain.User;

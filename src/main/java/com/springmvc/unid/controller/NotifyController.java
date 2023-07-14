@@ -1,7 +1,7 @@
 package com.springmvc.unid.controller;
 
 import com.springmvc.unid.controller.dto.request.RequestCreateNotifyDto;
-import com.springmvc.unid.controller.dto.response.NotifyDto;
+import com.springmvc.unid.controller.dto.NotifyDto;
 import com.springmvc.unid.service.NotifyService;
 import com.springmvc.unid.util.api.ApiResponse;
 import com.springmvc.unid.util.exception.ResponseCode;
