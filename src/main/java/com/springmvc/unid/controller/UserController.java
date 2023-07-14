@@ -3,7 +3,7 @@ package com.springmvc.unid.controller;
 import com.springmvc.unid.controller.dto.TeamDto;
 import com.springmvc.unid.controller.dto.UserDto;
 import com.springmvc.unid.controller.dto.request.*;
-import com.springmvc.unid.controller.dto.response.NotifyDto;
+import com.springmvc.unid.controller.dto.NotifyDto;
 import com.springmvc.unid.service.NotifyService;
 import com.springmvc.unid.service.TeamService;
 import com.springmvc.unid.service.UserService;
