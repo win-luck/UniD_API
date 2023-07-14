@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Setter @Getter
 @Table(name = "requirement")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Requirement {
+public class Requirement { // 팀-요구사항은 1대다 관계
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "requirement_id")

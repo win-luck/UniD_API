@@ -20,7 +20,7 @@ public class Notify {
     @Column(name = "notify_id")
     private Long id;
 
-    private Long type; // 알림의 종류
+    private Long type; // 알림 종류
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

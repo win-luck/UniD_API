@@ -71,7 +71,7 @@ public class TeamController {
         return ApiResponse.success(teamMembers, ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
-    // user의 대학의 팀 조회
+    // user의 소속 대학의 팀 조회
     @GetMapping("/api/teams/univ")
     public ApiResponse<List<TeamDto>> getTeamListByUniv(@RequestBody RequestUnivMemberDto universityDto){
         List<TeamDto> teamDtoList = teamService.findTeamByUniv(universityDto.getUniversity());

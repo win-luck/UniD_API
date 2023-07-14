@@ -95,23 +95,4 @@ public class UserService {
         return teamDtos;
     }
 
-    /*// 특정 알림을 받은 user 조회
-    public List<User> findUsersByUserNotify(Notify notify) {
-        List<User> users = new ArrayList<>();
-        List<UserNotify> userNotifies = userNotifyRepository.findByNotify(notify);
-        for (UserNotify userNotify : userNotifies) {
-            users.add(userNotify.getUser());
-        }
-        return users;
-    } */
-
-    /*// 특정 대학에 소속된 user 조회
-    public List<UserDto> findUsersByUniversity(String university) {
-        List<User> users = userRepository.findByUniversity(university);
-        List<UserDto> userDtos = new ArrayList<>();
-        for (User user : users) {
-            userDtos.add(new UserDto(user));
-        }
-        return userDtos;
-    }*/
 }

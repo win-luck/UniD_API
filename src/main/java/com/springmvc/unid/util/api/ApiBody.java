@@ -1,5 +1,6 @@
 package com.springmvc.unid.util.api;
 
+// 응답 바디
 public class ApiBody<T> {
     private final T data;
     private final T msg;

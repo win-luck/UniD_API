@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RequestDeleteRequirementDto { // 팀 요구사항 삭제 요청
+public class RequestDeleteRequirementDto { // 팀의 요구사항 삭제 요청
     private Long requirementId;
     private Long userId;
 }

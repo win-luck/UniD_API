@@ -26,7 +26,7 @@ public class TeamMember { // Team과 User의 다대다 관계로 인해 생성�
     @JoinColumn(name = "user_id")
     private User user; // 사용자 id - 외래키
 
-    private LocalDate joinDate; // 팀 가입일
+    private LocalDate joinDate; // 팀 가입 날짜
 
     // 생성 메서드
     public static TeamMember createTeamMember(Team team, User user, LocalDate joinDate) {

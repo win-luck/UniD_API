@@ -1,6 +1,6 @@
 package com.springmvc.unid.controller.dto.request;
 
-import com.springmvc.unid.controller.dto.response.NotifyDto;
+import com.springmvc.unid.controller.dto.NotifyDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -1,7 +1,7 @@
 package com.springmvc.unid.service;
 
 import com.springmvc.unid.controller.dto.UserDto;
-import com.springmvc.unid.controller.dto.response.NotifyDto;
+import com.springmvc.unid.controller.dto.NotifyDto;
 import com.springmvc.unid.domain.Notify;
 import com.springmvc.unid.domain.Team;
 import com.springmvc.unid.domain.User;
@@ -76,7 +76,7 @@ public class NotifyService {
         return notifyDtos;
     }
 
-    // user에게 알림을 전송
+    // user에게 알림 전송
     @Transactional
     public void sendNotify(User user, Notify notify){
         UserNotify userNotify = UserNotify.createUserNotify(user, notify, LocalDate.now());

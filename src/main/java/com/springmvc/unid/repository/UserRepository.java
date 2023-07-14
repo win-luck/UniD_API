@@ -9,9 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    // 회원 가입 및 정보 수정 - save(User user)
 
-    // id로 회원 조회
     Optional<User> findById(Long Id);
 
     // name으로 회원 조회

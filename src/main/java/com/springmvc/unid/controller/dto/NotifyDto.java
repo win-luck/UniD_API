@@ -1,13 +1,9 @@
-package com.springmvc.unid.controller.dto.response;
+package com.springmvc.unid.controller.dto;
 
 import com.springmvc.unid.domain.Notify;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * ResponseNotifyDto의 용도
- * 알림 조회 결과 객체 (response)
- */
 @Data
 @NoArgsConstructor
 public class NotifyDto {

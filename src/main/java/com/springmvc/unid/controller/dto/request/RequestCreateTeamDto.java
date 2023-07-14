@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class RequestCreateTeamDto { // 팀 생성 요청
+
     private String name;
     private String user;
     private String oneLine;

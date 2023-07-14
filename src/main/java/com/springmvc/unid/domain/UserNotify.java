@@ -20,7 +20,7 @@ public class UserNotify { // User와 Notify의 다대다 관계로 인해 생성
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user; // 수신자
+    private User user; // 수신 유저
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notify_id")

@@ -17,7 +17,7 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     // 특정 팀의 소속 user 조회
     List<TeamMember> findByTeam(Team team);
 
-    // user가 팀에 가입 - save
+    // user가 팀에 가입 -> save
 
     // user가 팀에서 탈퇴
     void delete(TeamMember teamMember);

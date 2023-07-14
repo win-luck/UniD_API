@@ -8,13 +8,6 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-/**
- * TeamDto의 용도
- * 1. 팀 생성 Request/Response
- * 2. 팀 정보 수정 Request/Response
- * 3. 팀 조회 결과 Response
- * 4. 팀 삭제 Request/Response
- */
 @Data
 @NoArgsConstructor
 public class TeamDto {

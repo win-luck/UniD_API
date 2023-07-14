@@ -25,7 +25,6 @@ public class Team {
 
     private String name; // 팀 이름
 
-    // 각 팀 테이블은 팀장의 id를 외래키로 가짐
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // 팀장

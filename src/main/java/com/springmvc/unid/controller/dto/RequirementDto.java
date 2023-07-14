@@ -4,13 +4,6 @@ import com.springmvc.unid.domain.Requirement;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * RequirementDto의 용도
- * 1. 팀장이 파트별 요구사항 추가 request/response
- * 2. 팀장이 파트별 요구사항 수정 request/response
- * 3. 팀장이 파트별 요구사항 삭제 request/response
- * 4. 팀장이 파트별 요구사항 조회 결과 response
- */
 @Data
 @NoArgsConstructor
 public class RequirementDto {

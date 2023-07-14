@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class RequestCreateUserDto { // 회원가입 요청
+
     private String loginId;
     private String pw;
     private String name;

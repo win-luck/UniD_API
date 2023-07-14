@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+// #33 테스트 코드 수정 필요
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional

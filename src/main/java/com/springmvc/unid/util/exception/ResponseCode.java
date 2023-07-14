@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+// 응답 코드와 응답 메시지를 정의한 enum 클래스
 @AllArgsConstructor(access =  AccessLevel.PRIVATE)
 @Getter
 public enum ResponseCode {

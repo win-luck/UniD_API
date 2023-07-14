@@ -22,7 +22,7 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    private String loginId; // 사용자 id
+    private String loginId; // 유저 id
 
     private String name; // 사용자 별명
 

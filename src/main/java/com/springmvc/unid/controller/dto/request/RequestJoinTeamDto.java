@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RequestJoinTeamDto { // 팀 가입 요청
+public class RequestJoinTeamDto { // 팀에 가입 요청
     private Long teamId;
 }

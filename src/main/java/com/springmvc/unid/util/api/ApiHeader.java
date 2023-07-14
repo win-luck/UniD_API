@@ -1,5 +1,6 @@
 package com.springmvc.unid.util.api;
 
+// 응답 헤더
 public class ApiHeader {
     private final int resultCode;
     private final String codeName;

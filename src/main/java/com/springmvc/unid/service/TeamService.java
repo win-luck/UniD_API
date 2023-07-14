@@ -132,7 +132,7 @@ public class TeamService {
         return new UserDto(team.getUser());
     }
 
-    // 팀에 특정 팀원 가입
+    // 팀에 팀원 가입
     @Transactional
     public void joinTeam(Long userId, Long teamId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));

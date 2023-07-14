@@ -5,6 +5,7 @@ import com.springmvc.unid.util.exception.ResponseCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+// 응답 객체
 @Getter
 @RequiredArgsConstructor
 public class ApiResponse<T> {

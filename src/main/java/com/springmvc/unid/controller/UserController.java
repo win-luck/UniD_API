@@ -3,7 +3,7 @@ package com.springmvc.unid.controller;
 import com.springmvc.unid.controller.dto.TeamDto;
 import com.springmvc.unid.controller.dto.UserDto;
 import com.springmvc.unid.controller.dto.request.*;
-import com.springmvc.unid.controller.dto.response.NotifyDto;
+import com.springmvc.unid.controller.dto.NotifyDto;
 import com.springmvc.unid.service.NotifyService;
 import com.springmvc.unid.service.TeamService;
 import com.springmvc.unid.service.UserService;
@@ -66,7 +66,7 @@ public class UserController {
         return ApiResponse.success(teamDtoList, ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
-    // user가 현재 소속된 팀에서 탈퇴 (팀장이 아닌 팀원만 가능)
+    // user가 현재 소속된 팀에서 탈퇴 (팀장은 불가능)
     @PostMapping("/api/users/{id}/teams/leave")
     public ApiResponse<Long> leaveTeam(@PathVariable("id") Long id, @RequestBody RequestExitTeamDto requestExitTeamDto){
         teamService.leaveTeam(id, requestExitTeamDto.getTeamId());

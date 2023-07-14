@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RequestUnivMemberDto { // 대학 내 팀 조회 등을 위한 대학명 요청
+public class RequestUnivMemberDto { // 대학명 요청 (대학 소속 팀 목록 조회를 위함)
     private String university;
 }
