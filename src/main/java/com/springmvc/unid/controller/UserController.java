@@ -62,7 +62,7 @@ public class UserController {
     // user가 현재 소속된 팀 조회
     @GetMapping("/api/users/{id}/teams")
     public ApiResponse<List<TeamDto>> getTeamList(@PathVariable("id") Long id){
-        List<TeamDto> teamDtoList = teamService.findTeamByUser(userService.findOne(id));
+        List<TeamDto> teamDtoList = userService.findTeamsByUserId(id);
         return ApiResponse.success(teamDtoList, ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
@@ -75,16 +75,16 @@ public class UserController {
 
     // user가 자신이 받은 알림을 조회
     @GetMapping("/api/users/{id}/notifies")
-    public ApiResponse<Long> notify(@PathVariable("id") Long id){
+    public ApiResponse<List<NotifyDto>> notify(@PathVariable("id") Long id){
         List<NotifyDto> notifyDtoList = notifyService.findAllByUser(userService.findOne(id));
-        return ApiResponse.success(1L, ResponseCode.NOTIFY_READ_SUCCESS.getMessage());
+        return ApiResponse.success(notifyDtoList, ResponseCode.NOTIFY_READ_SUCCESS.getMessage());
     }
 
     // user가 자신이 보낸 알림을 조회
     @GetMapping("/api/users/{id}/notifies/sent")
-    public ApiResponse<Long> notifySent(@PathVariable("id") Long id){
+    public ApiResponse<List<NotifyDto>> notifySent(@PathVariable("id") Long id){
         List<NotifyDto> notifyDtoList = notifyService.findAllBySender(userService.findOne(id));
-        return ApiResponse.success(1L, ResponseCode.NOTIFY_READ_SUCCESS.getMessage());
+        return ApiResponse.success(notifyDtoList, ResponseCode.NOTIFY_READ_SUCCESS.getMessage());
     }
 
     // user가 자신이 받은 알림을 삭제
