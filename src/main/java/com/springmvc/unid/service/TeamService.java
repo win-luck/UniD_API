@@ -38,11 +38,7 @@ public class TeamService {
 
     public List<TeamDto> findAll() {
         List<Team> teams = teamRepository.findAll();
-        List<TeamDto> teamDtos = new ArrayList<>();
-        for (Team team : teams) {
-            teamDtos.add(new TeamDto(team));
-        }
-        return teamDtos;
+        return makeTeamDtoList(teams);
     }
 
     // user가 현재 소속된 팀 조회
@@ -50,31 +46,19 @@ public class TeamService {
         // List<TeamMember> TeamMembers = user.getTeamMemberList(); // 위와 아래의 차이 공부하기
         User user = userRepository.findByName(userDto.getName()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         List<TeamMember> TeamMembers = teamMemberRepository.findByUser(user);
-        List<TeamDto> teams = new ArrayList<>();
-        for (TeamMember teamMember : TeamMembers) {
-            teams.add(new TeamDto(teamMember.getTeam()));
-        }
-        return teams;
+        return makeTeamDtoListByUser(TeamMembers);
     }
 
     // user가 팀장인 팀 조회
     public List<TeamDto> findTeamByLeader(UserDto userDto) {
         List<Team> teams = teamRepository.findByUser(userRepository.findByName(userDto.getName()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
-        List<TeamDto> teamsDtos = new ArrayList<>();
-        for (Team team : teams) {
-            teamsDtos.add(new TeamDto(team));
-        }
-        return teamsDtos;
+        return makeTeamDtoList(teams);
     }
 
     // user의 대학 소속 팀 조회
     public List<TeamDto> findTeamByUniv(String university) {
         List<Team> teams= teamRepository.findByUniversity(university);
-        List<TeamDto> teamsDtos = new ArrayList<>();
-        for (Team team : teams) {
-            teamsDtos.add(new TeamDto(team));
-        }
-        return teamsDtos;
+        return makeTeamDtoList(teams);
     }
 
     // 팀 생성
@@ -209,6 +193,23 @@ public class TeamService {
         }
         team.deleteRequirement(requirementId);
         teamRepository.save(team);
+    }
+
+
+    public static List<TeamDto> makeTeamDtoList(List<Team> teams) {
+        List<TeamDto> teamDtos = new ArrayList<>();
+        for (Team team : teams) {
+            teamDtos.add(new TeamDto(team));
+        }
+        return teamDtos;
+    }
+
+    public static List<TeamDto> makeTeamDtoListByUser(List<TeamMember> teamMembers) {
+        List<TeamDto> teamDtos = new ArrayList<>();
+        for (TeamMember teamMember : teamMembers) {
+            teamDtos.add(new TeamDto(teamMember.getTeam()));
+        }
+        return teamDtos;
     }
 
 }
