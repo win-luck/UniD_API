@@ -58,22 +58,14 @@ public class NotifyService {
     public List<NotifyDto> findAllByUser(UserDto userDto){
         User user = userRepository.findById(userDto.getUserId()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         List<UserNotify> userNotifies = userNotifyRepository.findByUser(user);
-        List<NotifyDto> notifies = new ArrayList<>();
-        for(UserNotify userNotify : userNotifies){
-            notifies.add(new NotifyDto(userNotify.getNotify()));
-        }
-        return notifies;
+        return makeNotifyDtoListByUser(userNotifies);
     }
 
     // 특정 user가 보낸 모든 알림 조회
     public List<NotifyDto> findAllBySender(UserDto userDto){
         User user = userRepository.findById(userDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         List<Notify> notifies = notifyRepository.findByUser(user);
-        List<NotifyDto> notifyDtos = new ArrayList<>();
-        for(Notify notify : notifies){
-            notifyDtos.add(new NotifyDto(notify));
-        }
-        return notifyDtos;
+        return makeNotifyDtoList(notifies);
     }
 
     // user에게 알림을 전송
@@ -88,6 +80,10 @@ public class NotifyService {
     // 전체 알림 조회
     public List<NotifyDto> findAll(){
         List<Notify> notifies = notifyRepository.findAll();
+        return makeNotifyDtoList(notifies);
+    }
+
+    public static List<NotifyDto> makeNotifyDtoList(List<Notify> notifies){
         List<NotifyDto> notifyDtos = new ArrayList<>();
         for(Notify notify : notifies){
             notifyDtos.add(new NotifyDto(notify));
@@ -95,4 +91,11 @@ public class NotifyService {
         return notifyDtos;
     }
 
+    public static List<NotifyDto> makeNotifyDtoListByUser(List<UserNotify> userNotifies){
+        List<NotifyDto> notifyDtos = new ArrayList<>();
+        for(UserNotify userNotify : userNotifies){
+            notifyDtos.add(new NotifyDto(userNotify.getNotify()));
+        }
+        return notifyDtos;
+    }
 }

@@ -73,11 +73,7 @@ public class UserService {
     // 전체 user 조회
     public List<UserDto> findUsers() {
         List<User> users = userRepository.findAll();
-        List<UserDto> userDtos = new ArrayList<>();
-        for (User user : users) {
-            userDtos.add(new UserDto(user));
-        }
-        return userDtos;
+        return makeUserDtoList(users);
     }
 
     // 특정 user 조회
@@ -88,6 +84,18 @@ public class UserService {
     // 특정 user가 소속된 팀 조회
     public List<TeamDto> findTeamsByUserId(Long userId) {
         List<TeamMember> teams = teamMemberRepository.findByUser(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
+        return makeTeamDtoList(teams);
+    }
+
+    public static List<UserDto> makeUserDtoList(List<User> users) {
+        List<UserDto> userDtos = new ArrayList<>();
+        for (User user : users) {
+            userDtos.add(new UserDto(user));
+        }
+        return userDtos;
+    }
+
+    public static List<TeamDto> makeTeamDtoList(List<TeamMember> teams) {
         List<TeamDto> teamDtos = new ArrayList<>();
         for (TeamMember team : teams) {
             teamDtos.add(new TeamDto(team.getTeam()));
