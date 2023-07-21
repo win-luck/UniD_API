@@ -102,4 +102,8 @@ public class Team {
     public void setTeamLeader(User user) {
         this.user = user;
     } // 팀장 교체
+
+    public boolean isLeader(Long userId) {
+        return this.user.getId().equals(userId);
+    } // 팀장인지 확인
 }
