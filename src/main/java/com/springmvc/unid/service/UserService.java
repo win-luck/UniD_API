@@ -12,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,11 +49,12 @@ public class UserService {
 
     // 중복 user 검증
     private void validateDuplicateUser(User user) {
-        Optional<User> findUserByLoginId = userRepository.findByLoginId(user.getLoginId());
-        Optional<User> findUserByName = userRepository.findByName(user.getName());
-        if (findUserByName.isPresent() || findUserByLoginId.isPresent()) {
+        userRepository.findByLoginId(user.getLoginId()).ifPresent(m -> {
             throw new CustomException(ResponseCode.DUPLICATED_USER);
-        }
+        });
+        userRepository.findByName(user.getName()).ifPresent(m -> {
+            throw new CustomException(ResponseCode.DUPLICATED_USER);
+        });
     }
 
     // user 탈퇴
@@ -87,39 +88,16 @@ public class UserService {
         return makeTeamDtoList(teams);
     }
 
-    public static List<UserDto> makeUserDtoList(List<User> users) {
-        List<UserDto> userDtos = new ArrayList<>();
-        for (User user : users) {
-            userDtos.add(new UserDto(user));
-        }
-        return userDtos;
+    private static List<UserDto> makeUserDtoList(List<User> users) {
+        return users.stream()
+                .map(UserDto::new)
+                .collect(Collectors.toList());
     }
 
-    public static List<TeamDto> makeTeamDtoList(List<TeamMember> teams) {
-        List<TeamDto> teamDtos = new ArrayList<>();
-        for (TeamMember team : teams) {
-            teamDtos.add(new TeamDto(team.getTeam()));
-        }
-        return teamDtos;
+    private static List<TeamDto> makeTeamDtoList(List<TeamMember> teams) {
+        return teams.stream()
+                .map(TeamDto::new)
+                .collect(Collectors.toList());
     }
 
-    /*// 특정 알림을 받은 user 조회
-    public List<User> findUsersByUserNotify(Notify notify) {
-        List<User> users = new ArrayList<>();
-        List<UserNotify> userNotifies = userNotifyRepository.findByNotify(notify);
-        for (UserNotify userNotify : userNotifies) {
-            users.add(userNotify.getUser());
-        }
-        return users;
-    } */
-
-    /*// 특정 대학에 소속된 user 조회
-    public List<UserDto> findUsersByUniversity(String university) {
-        List<User> users = userRepository.findByUniversity(university);
-        List<UserDto> userDtos = new ArrayList<>();
-        for (User user : users) {
-            userDtos.add(new UserDto(user));
-        }
-        return userDtos;
-    }*/
 }

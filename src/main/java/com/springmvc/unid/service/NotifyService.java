@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,13 +32,13 @@ public class NotifyService {
 
     // 알림 생성 (및 전송)
     @Transactional
-    public Long create(List<Long> receivedId, NotifyDto notifyDto){
+    public Long create(List<Long> receivedId, NotifyDto notifyDto) {
         User user = userRepository.findByName(notifyDto.getSender()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         Team team = teamRepository.findByName(notifyDto.getTeamName()).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
         Notify notify = Notify.createNotify(notifyDto.getType(), user, team, notifyDto.getContents(), notifyDto.getLink());
         notifyRepository.save(notify);
 
-        for(Long id : receivedId){
+        for (Long id : receivedId) {
             User receivedUser = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
             userNotifyRepository.save(UserNotify.createUserNotify(receivedUser, notify, LocalDate.now()));
         }
@@ -47,7 +47,7 @@ public class NotifyService {
 
     // user가 받은 알림 삭제
     @Transactional
-    public void deleteNotify(Long userId, Long notifyId){
+    public void deleteNotify(Long userId, Long notifyId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         Notify notify = notifyRepository.findById(notifyId).orElseThrow(() -> new CustomException(ResponseCode.NOTIFY_NOT_FOUND));
         UserNotify userNotify = userNotifyRepository.findByUserAndNotify(user, notify).orElseThrow(() -> new CustomException(ResponseCode.NOTIFY_NOT_FOUND));
@@ -55,14 +55,14 @@ public class NotifyService {
     }
 
     // 특정 user가 받은 모든 알림 조회
-    public List<NotifyDto> findAllByUser(UserDto userDto){
+    public List<NotifyDto> findAllByUser(UserDto userDto) {
         User user = userRepository.findById(userDto.getUserId()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         List<UserNotify> userNotifies = userNotifyRepository.findByUser(user);
         return makeNotifyDtoListByUser(userNotifies);
     }
 
     // 특정 user가 보낸 모든 알림 조회
-    public List<NotifyDto> findAllBySender(UserDto userDto){
+    public List<NotifyDto> findAllBySender(UserDto userDto) {
         User user = userRepository.findById(userDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         List<Notify> notifies = notifyRepository.findByUser(user);
         return makeNotifyDtoList(notifies);
@@ -70,32 +70,27 @@ public class NotifyService {
 
     // user에게 알림을 전송
     @Transactional
-    public void sendNotify(User user, Notify notify){
+    public void sendNotify(User user, Notify notify) {
         UserNotify userNotify = UserNotify.createUserNotify(user, notify, LocalDate.now());
-        userNotify.setUser(user);
-        userNotify.setNotify(notify);
         userNotifyRepository.save(userNotify);
     }
 
     // 전체 알림 조회
-    public List<NotifyDto> findAll(){
+    public List<NotifyDto> findAll() {
         List<Notify> notifies = notifyRepository.findAll();
         return makeNotifyDtoList(notifies);
     }
 
-    public static List<NotifyDto> makeNotifyDtoList(List<Notify> notifies){
-        List<NotifyDto> notifyDtos = new ArrayList<>();
-        for(Notify notify : notifies){
-            notifyDtos.add(new NotifyDto(notify));
-        }
-        return notifyDtos;
+    private static List<NotifyDto> makeNotifyDtoList(List<Notify> notifies) {
+        return notifies.stream()
+                .map(NotifyDto::new)
+                .collect(Collectors.toList());
     }
 
-    public static List<NotifyDto> makeNotifyDtoListByUser(List<UserNotify> userNotifies){
-        List<NotifyDto> notifyDtos = new ArrayList<>();
-        for(UserNotify userNotify : userNotifies){
-            notifyDtos.add(new NotifyDto(userNotify.getNotify()));
-        }
-        return notifyDtos;
+    private static List<NotifyDto> makeNotifyDtoListByUser(List<UserNotify> userNotifies) {
+        return userNotifies.stream()
+                .map(UserNotify::getNotify)
+                .map(NotifyDto::new)
+                .collect(Collectors.toList());
     }
 }

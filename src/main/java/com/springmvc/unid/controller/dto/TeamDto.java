@@ -1,6 +1,7 @@
 package com.springmvc.unid.controller.dto;
 
 import com.springmvc.unid.domain.Team;
+import com.springmvc.unid.domain.TeamMember;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,5 +38,16 @@ public class TeamDto {
         this.university = team.getUniversity();
         this.link = team.getLink();
         this.requirementList = team.getRequirementList().stream().map(RequirementDto::new).collect(toList());
+    }
+
+    public TeamDto(TeamMember teamMember) {
+        this.teamId = teamMember.getTeam().getId();
+        this.name = teamMember.getTeam().getName();
+        this.leader = teamMember.getTeam().getUser().getName();
+        this.oneLine = teamMember.getTeam().getOneLine();
+        this.description = teamMember.getTeam().getDescription();
+        this.university = teamMember.getTeam().getUniversity();
+        this.link = teamMember.getTeam().getLink();
+        this.requirementList = teamMember.getTeam().getRequirementList().stream().map(RequirementDto::new).collect(toList());
     }
 }

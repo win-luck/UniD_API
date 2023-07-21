@@ -37,9 +37,7 @@ public class TeamController {
     // 팀 정보 수정 (팀장만 가능)
     @PostMapping("/api/teams/{id}")
     public ApiResponse<Long> updateTeam(@PathVariable("id") Long id, @RequestBody RequestUpdateTeamDto requestUpdateTeamDto){
-        Long uid = teamService.update(id, requestUpdateTeamDto.getTeamDto(), requestUpdateTeamDto.getUserId());
-        if(uid == null) return ApiResponse.fail(ResponseCode.NOT_TEAM_LEADER); // 팀장 아님
-        return ApiResponse.success(uid, ResponseCode.TEAM_UPDATE_SUCCESS.getMessage());
+        Long uid = teamService.update(id, requestUpdateTeamDto.getTeamDto(), requestUpdateTeamDto.getUserId());return ApiResponse.success(uid, ResponseCode.TEAM_UPDATE_SUCCESS.getMessage());
     }
 
     // 팀 삭제 (팀장만 가능)
@@ -53,7 +51,6 @@ public class TeamController {
     @GetMapping("/api/teams/{id}")
     public ApiResponse<TeamDto> getTeamInfo(@PathVariable("id") Long id){
         TeamDto teamDto = teamService.findOne(id);
-        if(teamDto == null) return ApiResponse.fail(ResponseCode.TEAM_NOT_FOUND);
         return ApiResponse.success(teamDto, ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
@@ -72,9 +69,9 @@ public class TeamController {
     }
 
     // user의 대학의 팀 조회
-    @GetMapping("/api/teams/univ")
-    public ApiResponse<List<TeamDto>> getTeamListByUniv(@RequestBody RequestUnivMemberDto universityDto){
-        List<TeamDto> teamDtoList = teamService.findTeamByUniv(universityDto.getUniversity());
+    @GetMapping("/api/teams/univ/{univ}")
+    public ApiResponse<List<TeamDto>> getTeamListByUniv(@PathVariable("univ") String univ){
+        List<TeamDto> teamDtoList = teamService.findTeamByUniv(univ);
         return ApiResponse.success(teamDtoList, ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
