@@ -57,7 +57,7 @@ public class TeamService {
     public Long createTeam(RequestCreateTeamDto teamDto) {
         Team team = Team.createTeam(teamDto.getName(), userRepository.findByName(teamDto.getUser()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)),
                 teamDto.getOneLine(), teamDto.getDescription(), teamDto.getLink(), teamDto.getUniversity());
-        ValidateDuplicateTeam(team);
+        validateDuplicateTeam(team);
         team.setTeamLeader(team.getUser());
         teamRepository.save(team);
         teamMemberRepository.save(TeamMember.createTeamMember(team, team.getUser(), LocalDate.now()));
@@ -65,7 +65,7 @@ public class TeamService {
     }
 
     // 중복 팀명 검증
-    public void ValidateDuplicateTeam(Team team) {
+    private void validateDuplicateTeam(Team team) {
         teamRepository.findByName(team.getName()).ifPresent(m -> {
             throw new CustomException(ResponseCode.DUPLICATED_TEAM);
         });
@@ -107,13 +107,13 @@ public class TeamService {
     public void joinTeam(Long userId, Long teamId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
-        ValidateDuplicateTeamMember(user, team);
+        validateDuplicateTeamMember(user, team);
         TeamMember teamMember = TeamMember.createTeamMember(team, user, LocalDate.now());
         teamMemberRepository.save(teamMember);
     }
 
     // 이미 팀에 가입되어 있는 팀원인지 검증
-    public void ValidateDuplicateTeamMember(User user, Team team) {
+    private void validateDuplicateTeamMember(User user, Team team) {
         if (teamMemberRepository.findByUserAndTeam(user, team).isPresent())
             throw new CustomException(ResponseCode.DUPLICATED_TEAM_MEMBER);
     }
@@ -166,7 +166,7 @@ public class TeamService {
         teamRepository.save(team);
     }
 
-    public static List<TeamDto> makeTeamDtoList(List<Team> teams) {
+    private static List<TeamDto> makeTeamDtoList(List<Team> teams) {
         return teams.stream()
                 .map(TeamDto::new)
                 .collect(Collectors.toList());
