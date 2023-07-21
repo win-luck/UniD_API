@@ -40,14 +40,6 @@ public class TeamService {
         return makeTeamDtoList(teams);
     }
 
-    // user가 현재 소속된 팀 조회
-    public List<TeamDto> findTeamByUser(UserDto userDto) {
-        // List<TeamMember> TeamMembers = user.getTeamMemberList(); // 위와 아래의 차이 공부하기
-        User user = userRepository.findByName(userDto.getName()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-        List<TeamMember> TeamMembers = teamMemberRepository.findByUser(user);
-        return makeTeamDtoListByUser(TeamMembers);
-    }
-
     // user가 팀장인 팀 조회
     public List<TeamDto> findTeamByLeader(UserDto userDto) {
         List<Team> teams = teamRepository.findByUser(userRepository.findByName(userDto.getName()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
@@ -174,16 +166,9 @@ public class TeamService {
         teamRepository.save(team);
     }
 
-
     public static List<TeamDto> makeTeamDtoList(List<Team> teams) {
         return teams.stream()
                 .map(TeamDto::new)
-                .collect(Collectors.toList());
-    }
-
-    public static List<TeamDto> makeTeamDtoListByUser(List<TeamMember> teamMembers) {
-        return teamMembers.stream()
-                .map(teamMember -> new TeamDto(teamMember.getTeam()))
                 .collect(Collectors.toList());
     }
 
