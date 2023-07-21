@@ -81,13 +81,13 @@ public class NotifyService {
         return makeNotifyDtoList(notifies);
     }
 
-    public static List<NotifyDto> makeNotifyDtoList(List<Notify> notifies) {
+    private static List<NotifyDto> makeNotifyDtoList(List<Notify> notifies) {
         return notifies.stream()
                 .map(NotifyDto::new)
                 .collect(Collectors.toList());
     }
 
-    public static List<NotifyDto> makeNotifyDtoListByUser(List<UserNotify> userNotifies) {
+    private static List<NotifyDto> makeNotifyDtoListByUser(List<UserNotify> userNotifies) {
         return userNotifies.stream()
                 .map(UserNotify::getNotify)
                 .map(NotifyDto::new)
