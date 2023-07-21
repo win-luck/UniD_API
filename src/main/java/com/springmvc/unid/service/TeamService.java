@@ -74,7 +74,9 @@ public class TeamService {
 
     // 중복 팀명 검증
     public void ValidateDuplicateTeam(Team team) {
-        teamRepository.findByName(team.getName()).orElseThrow(() -> new CustomException(ResponseCode.DUPLICATED_TEAM));
+        teamRepository.findByName(team.getName()).ifPresent(m -> {
+            throw new CustomException(ResponseCode.DUPLICATED_TEAM);
+        });
     }
 
     // 팀 정보 수정 (팀장만 가능)
