@@ -26,7 +26,6 @@ public class UserController {
     @PostMapping("/api/users/login")
     public ApiResponse<Long> login(@RequestBody RequestLoginDto requestLoginDto){
         Long id = userService.login(requestLoginDto.getLoginId(), requestLoginDto.getPw());
-        if(id == null) return ApiResponse.fail(ResponseCode.USER_LOGIN_FAILED);
         return ApiResponse.success(id, ResponseCode.SIGNIN_SUCCESS.getMessage());
     }
 
@@ -34,7 +33,6 @@ public class UserController {
     @PostMapping("/api/users")
     public ApiResponse<Long> join(@RequestBody RequestCreateUserDto userDto){
         Long id = userService.join(userDto);
-        if(id == null) return ApiResponse.fail(ResponseCode.DUPLICATED_USER);
         return ApiResponse.success(id, ResponseCode.SIGNUP_SUCCESS.getMessage());
     }
 
@@ -94,7 +92,6 @@ public class UserController {
         return ApiResponse.success(1L, ResponseCode.NOTIFY_DELETE_SUCCESS.getMessage());
     }
 
-
     // 회원 정보 조회 V
     @GetMapping("/api/users/{id}")
     public ApiResponse<UserDto> find(@PathVariable Long id){
@@ -108,11 +105,4 @@ public class UserController {
         return ApiResponse.success(userService.findUsers(), ResponseCode.USER_READ_SUCCESS.getMessage());
     }
 
-    /* 특정 대학에 소속된 회원 조회 : 필요성이 떨어져 보류
-    @GetMapping("/api/users/{id}/")
-    public ApiResponse<List<UserDto>> findByUniversity(@RequestBody String university){
-        return ApiResponse.success(userService.findUsersByUniversity(university));
-    }*/
-
-    // 특정 알림을 받은 user 조회 : 마찬가지로 보류
 }
