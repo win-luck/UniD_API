@@ -5,7 +5,6 @@ import com.springmvc.unid.controller.dto.TeamDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,8 +13,6 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@Setter
-@Table(name = "team")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team {
 
@@ -38,72 +35,66 @@ public class Team {
 
     private String link; // 팀의 링크
 
-    @OneToMany(mappedBy = "team")
-    private List<Requirement> requirementList = new ArrayList<>(); // 팀원 모집 요구사항
+    @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
+    private List<Requirement> requirements = new ArrayList<>(); // 팀원 모집 요구사항
 
-    @OneToMany(mappedBy = "team")
-    private List<TeamMember> teamMembersList = new ArrayList<>(); // 소속된 팀원 명단
+    @OneToMany(mappedBy = "team", cascade = {CascadeType.REMOVE})
+    private List<TeamMember> teamMembers = new ArrayList<>(); // 소속된 팀원 명단
 
     // 생성 메서드
     public static Team createTeam(String name, User user, String oneLine, String description, String university, String link) {
         Team team = new Team();
-        team.setName(name);
-        team.setUser(user);
-        team.setOneLine(oneLine);
-        team.setDescription(description);
-        team.setUniversity(university);
-        team.setLink(link);
+        team.name = name;
+        team.user = user;
+        team.oneLine = oneLine;
+        team.description = description;
+        team.university = university;
+        team.link = link;
         return team;
     }
 
+    // 팀 정보 수정
     public void updateTeam(TeamDto teamDto) {
         this.name = teamDto.getName();
         this.oneLine = teamDto.getOneLine();
         this.description = teamDto.getDescription();
         this.university = teamDto.getUniversity();
         this.link = teamDto.getLink();
-    } // 팀 정보 수정
+    }
 
-    // 비즈니스 로직
+    // 팀원 모집 요구사항 추가
     public void addRequirement(Requirement requirement) {
         requirement.setTeam(this);
-        this.requirementList.add(requirement);
-    } // 팀원 모집 요구사항 추가
+        this.requirements.add(requirement);
+    }
 
-    public void deleteRequirement(Long id) {
-        for(Requirement requirement : this.requirementList) {
-            if(Objects.equals(requirement.getId(), id)) {
-                this.requirementList.remove(requirement);
-                break;
-            }
-        }
-    } // 팀원 모집 요구사항 삭제
-
+    // 팀원 모집 요구사항 수정
     public void modifyRequirement(Long id, RequirementDto requirementDto) {
-        for(Requirement requirement : this.requirementList) {
+        for (Requirement requirement : this.requirements) {
             if (id.equals(requirement.getId())) {
-                requirement.setPosition(requirementDto.getPosition());
-                requirement.setN(requirementDto.getN());
-                requirement.setRequireContents(requirementDto.getRequireContents());
+                requirement.updateRequirement(requirementDto.getPosition(), requirementDto.getN(), requirementDto.getContents());
                 break;
             }
         }
-    } // 팀원 모집 요구사항 수정
+    }
 
-    public Requirement getOneRequirement(Long id){
-        for(Requirement requirement : this.requirementList) {
+    // 팀원 모집 요구사항 삭제
+    public void deleteRequirement(Long id) {
+        for(Requirement requirement : this.requirements) {
             if(Objects.equals(requirement.getId(), id)) {
-                return requirement;
+                this.requirements.remove(requirement);
+                break;
             }
         }
-        return null;
-    } // 특정 요구사항 가져오기
+    }
 
+    // 팀장 교체
     public void setTeamLeader(User user) {
         this.user = user;
-    } // 팀장 교체
+    }
 
+    // 팀장인지 확인
     public boolean isLeader(Long userId) {
         return this.user.getId().equals(userId);
-    } // 팀장인지 확인
+    }
 }

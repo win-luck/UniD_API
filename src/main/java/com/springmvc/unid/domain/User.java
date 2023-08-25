@@ -1,20 +1,16 @@
 package com.springmvc.unid.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.springmvc.unid.controller.dto.request.RequestCreateUserDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
@@ -35,37 +31,24 @@ public class User {
 
     private String link; // 사용자의 링크
 
-    @OneToMany(mappedBy = "user")
-    private List<UserNotify> userNotifyList = new ArrayList<>(); // 사용자가 가지고 있는 알림 명단
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.REMOVE})
+    private List<UserNotify> userNotifies = new ArrayList<>(); // 사용자가 가지고 있는 알림 명단
 
-    @OneToMany(mappedBy = "user")
-    private List<TeamMember> teamMemberList = new ArrayList<>(); // 사용자가 소속된 팀 명단
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.REMOVE})
+    private List<TeamMember> teamMembers = new ArrayList<>(); // 사용자가 소속된 팀 명단
 
-    // 생성 메서드 (테스트코드용)
+    // 생성 메서드
     public static User createUser(String LoginId, String name, String pw, String university, String major, String link) {
         User user = new User();
-        user.setLoginId(LoginId);
-        user.setName(name);
-        user.setPw(pw);
-        user.setUniversity(university);
-        user.setMajor(major);
-        user.setLink(link);
+        user.loginId = LoginId;
+        user.name = name;
+        user.pw = pw;
+        user.university = university;
+        user.major = major;
+        user.link = link;
         return user;
     }
 
-    // 생성 메서드(컨트롤러 회원가입용)
-    public static User createUser(RequestCreateUserDto requestCreateUserDto) {
-        User user = new User();
-        user.setLoginId(requestCreateUserDto.getLoginId());
-        user.setName(requestCreateUserDto.getName());
-        user.setPw(requestCreateUserDto.getPw());
-        user.setUniversity(requestCreateUserDto.getUniversity());
-        user.setMajor(requestCreateUserDto.getMajor());
-        user.setLink(requestCreateUserDto.getLink());
-        return user;
-    }
-
-    // 비즈니스 로직
     // 사용자 정보 수정
     public void update(String name, String university, String major, String link) {
         this.name = name;

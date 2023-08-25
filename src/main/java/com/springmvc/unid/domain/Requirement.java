@@ -1,16 +1,13 @@
 package com.springmvc.unid.domain;
 
-import com.springmvc.unid.controller.dto.RequirementDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Setter @Getter
-@Table(name = "requirement")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Requirement {
 
@@ -18,23 +15,33 @@ public class Requirement {
     @Column(name = "requirement_id")
     private Long id;
 
-    private String position; // 구인 파트
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team; // Team과의 다대일 관계
 
-    private Long n; // 구인 파트별 팀원 수
+    private String position; // 구인 파트
 
-    private String requireContents; // 구체적인 구인 요구사항
+    private int n; // 구인 파트별 팀원 수
+
+    private String contents; // 요구사항
 
     // 생성 메서드
-    public static Requirement createRequirement(RequirementDto requirementDto) {
+    public static Requirement createRequirement(String position, int n, String contents) {
         Requirement requirement = new Requirement();
-        requirement.setPosition(requirementDto.getPosition());
-        requirement.setN(requirementDto.getN());
-        requirement.setRequireContents(requirementDto.getRequireContents());
+        requirement.position = position;
+        requirement.n = n;
+        requirement.contents = contents;
         return requirement;
     }
 
+    // 요구사항 수정
+    public void updateRequirement(String position, int n, String contents) {
+        this.position = position;
+        this.n = n;
+        this.contents = contents;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 }
