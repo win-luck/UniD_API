@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
-    // 팀 생성 및 수정 -> save(Team team)
 
     // 팀 조회
     Optional<Team> findById(Long id);
@@ -25,4 +24,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     List<Team> findByUser(User user);
 
     Optional<Team> findByName(String teamName);
+
+    boolean existsByName(String teamName);
 }
