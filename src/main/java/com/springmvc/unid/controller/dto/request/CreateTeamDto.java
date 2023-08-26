@@ -1,19 +1,19 @@
 package com.springmvc.unid.controller.dto.request;
 
-import com.springmvc.unid.controller.dto.RequirementDto;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
+@Getter
 @NoArgsConstructor
-public class RequestCreateTeamDto { // 팀 생성 요청
+public class CreateTeamDto { // 팀 생성 요청
+
     private String name;
-    private String user;
+    private Long leaderId;
     private String oneLine;
     private String description;
     private String university;
     private String link;
-    private List<RequirementDto> requirementList;
+    private List<CreateRequirementDto> requirementList;
 }

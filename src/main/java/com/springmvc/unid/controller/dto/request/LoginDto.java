@@ -1,11 +1,12 @@
 package com.springmvc.unid.controller.dto.request;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @NoArgsConstructor
-public class RequestLoginDto { // 로그인 요청
+public class LoginDto { // 로그인 요청
+
     private String loginId;
     private String pw;
 }
