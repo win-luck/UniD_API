@@ -1,9 +1,10 @@
 package com.springmvc.unid.service;
 
-import com.springmvc.unid.controller.dto.RequirementDto;
-import com.springmvc.unid.controller.dto.TeamDto;
-import com.springmvc.unid.controller.dto.UserDto;
-import com.springmvc.unid.controller.dto.request.RequestCreateTeamDto;
+import com.springmvc.unid.controller.dto.request.UpdateTeamDto;
+import com.springmvc.unid.controller.dto.response.ResponseRequirementDto;
+import com.springmvc.unid.controller.dto.response.ResponseTeamDto;
+import com.springmvc.unid.controller.dto.response.ResponseUserDto;
+import com.springmvc.unid.controller.dto.request.CreateTeamDto;
 import com.springmvc.unid.domain.Requirement;
 import com.springmvc.unid.domain.Team;
 import com.springmvc.unid.domain.User;
@@ -17,12 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TeamService {
 
@@ -30,117 +29,122 @@ public class TeamService {
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
 
-    public TeamDto findOne(Long id) {
-        Team team = teamRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
-        return new TeamDto(team);
+    // 특정 팀 조회
+    @Transactional(readOnly = true)
+    public ResponseTeamDto findOne(Long teamId) {
+        Team team = getTeamById(teamId);
+        return new ResponseTeamDto(team);
     }
 
-    public List<TeamDto> findAll() {
+    // 모든 팀 조회
+    @Transactional(readOnly = true)
+    public List<ResponseTeamDto> findAll() {
         List<Team> teams = teamRepository.findAll();
         return makeTeamDtoList(teams);
     }
 
-    // user가 팀장인 팀 조회
-    public List<TeamDto> findTeamByLeader(UserDto userDto) {
-        List<Team> teams = teamRepository.findByUser(userRepository.findByName(userDto.getName()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
+    // 특정 user가 팀장인 팀 조회
+    @Transactional(readOnly = true)
+    public List<ResponseTeamDto> findTeamByLeader(String userName) {
+        List<Team> teams = teamRepository.findByUser(userRepository.findByName(userName).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
         return makeTeamDtoList(teams);
     }
 
-    // user의 대학 소속 팀 조회
-    public List<TeamDto> findTeamByUniv(String university) {
+    // 특정 user의 대학 소속 팀 조회
+    @Transactional(readOnly = true)
+    public List<ResponseTeamDto> findTeamByUniv(String university) {
         List<Team> teams = teamRepository.findByUniversity(university);
         return makeTeamDtoList(teams);
     }
 
     // 팀 생성
     @Transactional
-    public Long createTeam(RequestCreateTeamDto teamDto) {
-        Team team = Team.createTeam(teamDto.getName(), userRepository.findByName(teamDto.getUser()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)),
+    public Long createTeam(CreateTeamDto teamDto) {
+        Team team = Team.createTeam(teamDto.getName(), userRepository.findById(teamDto.getLeaderId()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)),
                 teamDto.getOneLine(), teamDto.getDescription(), teamDto.getLink(), teamDto.getUniversity());
-        validateDuplicateTeam(team);
+        validateDuplicateTeam(team.getName());
         team.setTeamLeader(team.getUser());
         teamRepository.save(team);
-        teamMemberRepository.save(TeamMember.createTeamMember(team, team.getUser(), LocalDate.now()));
+        teamMemberRepository.save(TeamMember.createTeamMember(team, team.getUser()));
         return team.getId();
     }
 
     // 중복 팀명 검증
-    private void validateDuplicateTeam(Team team) {
-        teamRepository.findByName(team.getName()).ifPresent(m -> {
-            throw new CustomException(ResponseCode.DUPLICATED_TEAM);
-        });
+    private void validateDuplicateTeam(String name) {
+        if (teamRepository.existsByName(name)) throw new CustomException(ResponseCode.DUPLICATED_TEAM);
     }
 
     // 팀 정보 수정 (팀장만 가능)
     @Transactional
-    public Long update(Long id, TeamDto teamDto, Long userId) {
-        Team findTeam = teamRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
-        if (!findTeam.isLeader(userId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
-        findTeam.updateTeam(teamDto);
-        teamRepository.save(findTeam);
-        return findTeam.getId();
+    public Long update(Long teamId, UpdateTeamDto teamDto, Long userId) {
+        Team team = getTeamById(teamId);
+        if (!team.isLeader(userId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
+        team.updateTeam(teamDto.getName(), teamDto.getOneLine(), teamDto.getDescription(), teamDto.getUniversity(), teamDto.getLink());
+        teamRepository.save(team);
+        return team.getId();
     }
 
     // 팀 삭제 (팀장만 가능)
     @Transactional
     public void deleteTeam(Long teamId, Long leaderId) {
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+        Team team = getTeamById(teamId);
         if (team.isLeader(leaderId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         teamRepository.delete(team);
     }
 
     // 특정 팀의 팀원 조회
-    public List<UserDto> findTeamMember(Long teamId) {
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+    @Transactional(readOnly = true)
+    public List<ResponseUserDto> findTeamMember(Long teamId) {
+        Team team = getTeamById(teamId);
         List<TeamMember> teamMembers = teamMemberRepository.findByTeam(team);
-        return teamMembers.stream().map(m -> new UserDto(m.getUser())).collect(Collectors.toList());
+        return teamMembers.stream().map(m -> new ResponseUserDto(m.getUser())).collect(Collectors.toList());
     }
 
     // 특정 팀의 팀장 조회
-    public UserDto findTeamLeader(Long teamId) {
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
-        return new UserDto(team.getUser());
+    @Transactional(readOnly = true)
+    public ResponseUserDto findTeamLeader(Long teamId) {
+        Team team = getTeamById(teamId);
+        return new ResponseUserDto(team.getUser());
     }
 
     // 팀에 특정 팀원 가입
     @Transactional
     public void joinTeam(Long userId, Long teamId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+        User user = getUserById(userId);
+        Team team = getTeamById(teamId);
         validateDuplicateTeamMember(user, team);
-        TeamMember teamMember = TeamMember.createTeamMember(team, user, LocalDate.now());
-        teamMemberRepository.save(teamMember);
+        teamMemberRepository.save(TeamMember.createTeamMember(team, user));
     }
 
     // 이미 팀에 가입되어 있는 팀원인지 검증
     private void validateDuplicateTeamMember(User user, Team team) {
-        if (teamMemberRepository.findByUserAndTeam(user, team).isPresent())
+        if (teamMemberRepository.existsByUserAndTeam(user, team))
             throw new CustomException(ResponseCode.DUPLICATED_TEAM_MEMBER);
     }
 
     // 팀에 특정 팀원 탈퇴 (팀장은 탈퇴 불가능)
     @Transactional
     public void leaveTeam(Long userId, Long teamId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+        User user = getUserById(userId);
+        Team team = getTeamById(teamId);
         if (team.isLeader(userId)) throw new CustomException(ResponseCode.TEAM_LEADER_CANNOT_LEAVE);
         teamMemberRepository.deleteByUserAndTeam(user, team);
     }
 
     // 특정 팀의 팀장 변경 (팀장만 가능)
     @Transactional
-    public void setTeamLeader(Long leaderId, Long nextId, Long teamId) {
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+    public void setTeamLeader(Long leaderId, String nextLeaderName, Long teamId) {
+        Team team = getTeamById(teamId);
         if (!team.isLeader(leaderId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
-        User nextLeader = userRepository.findById(nextId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-        team.setUser(nextLeader);
+        User nextLeader = userRepository.findByName(nextLeaderName).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
+        team.setTeamLeader(nextLeader);
         teamRepository.save(team);
     }
 
     // 특정 팀의 구인 요구사항 추가 (팀장만 가능)
     @Transactional
-    public Long addRequirement(Long leaderId, RequirementDto requirementDto) {
-        Requirement requirement = Requirement.createRequirement(requirementDto);
+    public Long addRequirement(Long leaderId, ResponseRequirementDto responseRequirementDto) {
+        Requirement requirement = Requirement.createRequirement(responseRequirementDto.getPosition(), responseRequirementDto.getN(), responseRequirementDto.getContents());
         Team team = requirement.getTeam();
         if (!team.isLeader(leaderId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         team.addRequirement(requirement);
@@ -148,28 +152,26 @@ public class TeamService {
         return requirement.getId();
     }
 
-    // 특정 팀의 구인 요구사항 수정 (팀장만 가능)
-    @Transactional
-    public void updateRequirement(Long leaderId, Long reqId, RequirementDto requirementDto) {
-        Team team = teamRepository.findById(requirementDto.getTeamId()).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
-        if (!team.isLeader(leaderId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
-        team.modifyRequirement(reqId, requirementDto);
-        teamRepository.save(team);
-    }
-
     // 특정 팀의 구인 요구사항 제거 (팀장만 가능)
     @Transactional
     public void deleteRequirement(Long teamId, Long requirementId, Long userId) {
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
+        Team team = getTeamById(teamId);
         if (!team.isLeader(userId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         team.deleteRequirement(requirementId);
         teamRepository.save(team);
     }
 
-    private static List<TeamDto> makeTeamDtoList(List<Team> teams) {
-        return teams.stream()
-                .map(TeamDto::new)
-                .collect(Collectors.toList());
+    private Team getTeamById(Long teamId) {
+        return teamRepository.findById(teamId).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
     }
 
+    private User getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
+    }
+
+    private List<ResponseTeamDto> makeTeamDtoList(List<Team> teams) {
+        return teams.stream()
+                .map(ResponseTeamDto::new)
+                .collect(Collectors.toList());
+    }
 }
