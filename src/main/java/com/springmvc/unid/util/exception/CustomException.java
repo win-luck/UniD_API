@@ -6,6 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class CustomException extends RuntimeException {
+
     private final ResponseCode responseCode;
 
     @Override
@@ -13,5 +14,3 @@ public class CustomException extends RuntimeException {
         return responseCode.getMessage();
     }
 }
-
-

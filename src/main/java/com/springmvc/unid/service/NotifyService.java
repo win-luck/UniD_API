@@ -1,13 +1,11 @@
 package com.springmvc.unid.service;
 
-import com.springmvc.unid.controller.dto.UserDto;
-import com.springmvc.unid.controller.dto.NotifyDto;
+import com.springmvc.unid.controller.dto.request.CreateNotifyDto;
+import com.springmvc.unid.controller.dto.response.ResponseNotifyDto;
 import com.springmvc.unid.domain.Notify;
-import com.springmvc.unid.domain.Team;
 import com.springmvc.unid.domain.User;
 import com.springmvc.unid.domain.UserNotify;
 import com.springmvc.unid.repository.NotifyRepository;
-import com.springmvc.unid.repository.TeamRepository;
 import com.springmvc.unid.repository.UserNotifyRepository;
 import com.springmvc.unid.repository.UserRepository;
 import com.springmvc.unid.util.exception.CustomException;
@@ -16,33 +14,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NotifyService {
 
     private final NotifyRepository notifyRepository;
-    private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final UserNotifyRepository userNotifyRepository;
 
-    // 알림 생성 (및 전송)
-    @Transactional
-    public Long create(List<Long> receivedId, NotifyDto notifyDto) {
-        User user = userRepository.findByName(notifyDto.getSender()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-        Team team = teamRepository.findByName(notifyDto.getTeamName()).orElseThrow(() -> new CustomException(ResponseCode.TEAM_NOT_FOUND));
-        Notify notify = Notify.createNotify(notifyDto.getType(), user, team, notifyDto.getContents(), notifyDto.getLink());
-        notifyRepository.save(notify);
-
-        for (Long id : receivedId) {
-            User receivedUser = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-            userNotifyRepository.save(UserNotify.createUserNotify(receivedUser, notify, LocalDate.now()));
-        }
-        return notify.getId();
+    // 특정 user가 받은 모든 알림 조회
+    @Transactional(readOnly = true)
+    public List<ResponseNotifyDto> findAllByUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
+        List<UserNotify> userNotifies = userNotifyRepository.findByUser(user);
+        return makeNotifyDtoListByUser(userNotifies);
     }
 
     // user가 받은 알림 삭제
@@ -54,43 +42,44 @@ public class NotifyService {
         userNotifyRepository.delete(userNotify);
     }
 
-    // 특정 user가 받은 모든 알림 조회
-    public List<NotifyDto> findAllByUser(UserDto userDto) {
-        User user = userRepository.findById(userDto.getUserId()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-        List<UserNotify> userNotifies = userNotifyRepository.findByUser(user);
-        return makeNotifyDtoListByUser(userNotifies);
-    }
-
     // 특정 user가 보낸 모든 알림 조회
-    public List<NotifyDto> findAllBySender(UserDto userDto) {
-        User user = userRepository.findById(userDto.getUserId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
+    @Transactional(readOnly = true)
+    public List<ResponseNotifyDto> findAllBySender(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
         List<Notify> notifies = notifyRepository.findByUser(user);
         return makeNotifyDtoList(notifies);
     }
 
-    // user에게 알림을 전송
+    // 알림 생성 및 전송
     @Transactional
-    public void sendNotify(User user, Notify notify) {
-        UserNotify userNotify = UserNotify.createUserNotify(user, notify, LocalDate.now());
-        userNotifyRepository.save(userNotify);
+    public Long createAndSendNotices(CreateNotifyDto notifyDto) {
+        User user = userRepository.findByName(notifyDto.getSender()).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
+        Notify notify = Notify.createNotify(notifyDto.getType(), user, notifyDto.getContents(), notifyDto.getLink());
+        notifyRepository.save(notify); // 알림 생성
+
+        for (Long id : notifyDto.getReceiverIds()) { // 알림 전송
+            User receivedUser = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
+            userNotifyRepository.save(UserNotify.createUserNotify(receivedUser, notify));
+        }
+        return notify.getId();
     }
 
     // 전체 알림 조회
-    public List<NotifyDto> findAll() {
+    @Transactional(readOnly = true)
+    public List<ResponseNotifyDto> findAll() {
         List<Notify> notifies = notifyRepository.findAll();
         return makeNotifyDtoList(notifies);
     }
 
-    private static List<NotifyDto> makeNotifyDtoList(List<Notify> notifies) {
+    private List<ResponseNotifyDto> makeNotifyDtoList(List<Notify> notifies) {
         return notifies.stream()
-                .map(NotifyDto::new)
+                .map(ResponseNotifyDto::new)
                 .collect(Collectors.toList());
     }
 
-    private static List<NotifyDto> makeNotifyDtoListByUser(List<UserNotify> userNotifies) {
+    private List<ResponseNotifyDto> makeNotifyDtoListByUser(List<UserNotify> userNotifies) {
         return userNotifies.stream()
-                .map(UserNotify::getNotify)
-                .map(NotifyDto::new)
+                .map(ResponseNotifyDto::new)
                 .collect(Collectors.toList());
     }
 }

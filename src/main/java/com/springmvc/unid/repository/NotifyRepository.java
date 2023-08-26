@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface NotifyRepository extends JpaRepository<Notify, Long> {
-    // 알림 생성 -> save(Notify notify)
 
     // 알림 조회
     Optional<Notify> findById(Long Id);

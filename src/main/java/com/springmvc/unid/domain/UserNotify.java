@@ -3,14 +3,13 @@ package com.springmvc.unid.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Setter @Getter
-@Table(name = "user_notify")
+@Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserNotify { // User와 Notify의 다대다 관계로 인해 생성된 테이블
 
@@ -26,14 +25,14 @@ public class UserNotify { // User와 Notify의 다대다 관계로 인해 생성
     @JoinColumn(name = "notify_id")
     private Notify notify; // 알림
 
+    @CreatedDate
     private LocalDate notifyDate; // 알림 수신 시간
 
     // 생성 메서드
-    public static UserNotify createUserNotify(User user, Notify notify, LocalDate notifyDate) {
+    public static UserNotify createUserNotify(User user, Notify notify) {
         UserNotify userNotify = new UserNotify();
-        userNotify.setUser(user);
-        userNotify.setNotify(notify);
-        userNotify.setNotifyDate(notifyDate);
+        userNotify.user = user;
+        userNotify.notify = notify;
         return userNotify;
     }
 }

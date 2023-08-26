@@ -1,8 +1,8 @@
 package com.springmvc.unid.service;
 
-import com.springmvc.unid.controller.dto.TeamDto;
-import com.springmvc.unid.controller.dto.UserDto;
-import com.springmvc.unid.controller.dto.request.RequestCreateUserDto;
+import com.springmvc.unid.controller.dto.response.ResponseTeamDto;
+import com.springmvc.unid.controller.dto.response.ResponseUserDto;
+import com.springmvc.unid.controller.dto.request.CreateUserDto;
 import com.springmvc.unid.domain.*;
 import com.springmvc.unid.util.exception.CustomException;
 import com.springmvc.unid.util.exception.ResponseCode;
@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -25,6 +24,7 @@ public class UserService {
     private final TeamMemberRepository teamMemberRepository;
 
     // 로그인
+    @Transactional(readOnly = true)
     public Long login(String id, String password) {
         Optional<User> findUsers = userRepository.findByLoginIdAndPw(id, password);
         if (findUsers.isPresent()) {
@@ -40,21 +40,28 @@ public class UserService {
 
     // user 가입
     @Transactional
-    public Long join(RequestCreateUserDto userDto) {
-        User user = User.createUser(userDto);
-        validateDuplicateUser(user);
-        userRepository.save(user);
-        return user.getId();
+    public Long join(CreateUserDto userDto) {
+        User user = User.createUser(userDto.getLoginId(), userDto.getPw(), userDto.getName(), userDto.getUniversity(), userDto.getMajor(), userDto.getLink());
+        validateDuplicateUser(user.getName(), user.getLoginId());
+        return userRepository.save(user).getId();
     }
 
     // 중복 user 검증
-    private void validateDuplicateUser(User user) {
-        userRepository.findByLoginId(user.getLoginId()).ifPresent(m -> {
+    private void validateDuplicateUser(String name, String loginId) {
+        if (userRepository.existsByName(name)) {
             throw new CustomException(ResponseCode.DUPLICATED_USER);
-        });
-        userRepository.findByName(user.getName()).ifPresent(m -> {
+        }
+        if (userRepository.existsByLoginId(loginId)) {
             throw new CustomException(ResponseCode.DUPLICATED_USER);
-        });
+        }
+    }
+
+    // user 정보 수정
+    @Transactional
+    public void update(Long id, String newName, String newUniv, String newMajor, String newLink) {
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
+        user.update(newName, newUniv, newMajor, newLink);
+        userRepository.save(user);
     }
 
     // user 탈퇴
@@ -63,41 +70,35 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // user 정보 수정
-    @Transactional
-    public void update(Long id, String newName, String newUniv, String newMajor, String newLink) {
-        User findUser = userRepository.findById(id).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND));
-        findUser.update(newName, newUniv, newMajor, newLink);
-        userRepository.save(findUser);
-    }
-
     // 전체 user 조회
-    public List<UserDto> findUsers() {
+    @Transactional(readOnly = true)
+    public List<ResponseUserDto> findUsers() {
         List<User> users = userRepository.findAll();
         return makeUserDtoList(users);
     }
 
     // 특정 user 조회
-    public UserDto findOne(Long userId) {
-        return new UserDto(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
+    @Transactional(readOnly = true)
+    public ResponseUserDto findOne(Long userId) {
+        return new ResponseUserDto(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
     }
 
     // 특정 user가 소속된 팀 조회
-    public List<TeamDto> findTeamsByUserId(Long userId) {
-        List<TeamMember> teams = teamMemberRepository.findByUser(userRepository.findById(userId).orElseThrow(() -> new CustomException(ResponseCode.USER_NOT_FOUND)));
+    @Transactional(readOnly = true)
+    public List<ResponseTeamDto> findTeamsByUserId(Long userId) {
+        List<TeamMember> teams = teamMemberRepository.findByUserId(userId);
         return makeTeamDtoList(teams);
     }
 
-    private static List<UserDto> makeUserDtoList(List<User> users) {
+    private List<ResponseUserDto> makeUserDtoList(List<User> users) {
         return users.stream()
-                .map(UserDto::new)
+                .map(ResponseUserDto::new)
                 .collect(Collectors.toList());
     }
 
-    private static List<TeamDto> makeTeamDtoList(List<TeamMember> teams) {
+    private List<ResponseTeamDto> makeTeamDtoList(List<TeamMember> teams) {
         return teams.stream()
-                .map(TeamDto::new)
+                .map(ResponseTeamDto::new)
                 .collect(Collectors.toList());
     }
-
 }

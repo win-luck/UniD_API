@@ -1,10 +1,10 @@
 package com.springmvc.unid.controller.dto.request;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @NoArgsConstructor
-public class RequestJoinTeamDto { // 팀 가입 요청
+public class ExitTeamDto { // 팀 탈퇴 요청
     private Long teamId;
 }

@@ -13,12 +13,10 @@ import java.util.Optional;
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
     // 특정 user의 소속 팀 조회
-    List<TeamMember> findByUser(User user);
+    List<TeamMember> findByUserId(Long userId);
 
     // 특정 팀의 소속 user 조회
     List<TeamMember> findByTeam(Team team);
-
-    // user가 팀에 가입 - save
 
     // 특정 user 조회
     Optional<TeamMember> findByUserAndTeam(User user, Team team);
@@ -27,4 +25,6 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     void delete(TeamMember teamMember);
 
     void deleteByUserAndTeam(User user, Team team);
+
+    boolean existsByUserAndTeam(User user, Team team);
 }
