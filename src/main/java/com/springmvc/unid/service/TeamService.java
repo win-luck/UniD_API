@@ -1,5 +1,7 @@
 package com.springmvc.unid.service;
 
+import com.springmvc.unid.controller.dto.request.CreateNotifyDto;
+import com.springmvc.unid.controller.dto.request.CreateRequirementDto;
 import com.springmvc.unid.controller.dto.request.UpdateTeamDto;
 import com.springmvc.unid.controller.dto.response.ResponseRequirementDto;
 import com.springmvc.unid.controller.dto.response.ResponseTeamDto;
@@ -76,12 +78,11 @@ public class TeamService {
 
     // 팀 정보 수정 (팀장만 가능)
     @Transactional
-    public Long update(Long teamId, UpdateTeamDto teamDto, Long userId) {
+    public void updateTeamInfo(Long teamId, UpdateTeamDto teamDto) {
         Team team = getTeamById(teamId);
-        if (!team.isLeader(userId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
+        if (!team.isLeader(teamDto.getUserId())) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         team.updateTeam(teamDto.getName(), teamDto.getOneLine(), teamDto.getDescription(), teamDto.getUniversity(), teamDto.getLink());
         teamRepository.save(team);
-        return team.getId();
     }
 
     // 팀 삭제 (팀장만 가능)
@@ -94,7 +95,7 @@ public class TeamService {
 
     // 특정 팀의 팀원 조회
     @Transactional(readOnly = true)
-    public List<ResponseUserDto> findTeamMember(Long teamId) {
+    public List<ResponseUserDto> findTeamMembers(Long teamId) {
         Team team = getTeamById(teamId);
         List<TeamMember> teamMembers = teamMemberRepository.findByTeam(team);
         return teamMembers.stream().map(m -> new ResponseUserDto(m.getUser())).collect(Collectors.toList());
@@ -143,8 +144,8 @@ public class TeamService {
 
     // 특정 팀의 구인 요구사항 추가 (팀장만 가능)
     @Transactional
-    public Long addRequirement(Long leaderId, ResponseRequirementDto responseRequirementDto) {
-        Requirement requirement = Requirement.createRequirement(responseRequirementDto.getPosition(), responseRequirementDto.getN(), responseRequirementDto.getContents());
+    public Long addRequirement(Long leaderId, CreateRequirementDto requirementDto) {
+        Requirement requirement = Requirement.createRequirement(requirementDto.getPosition(), requirementDto.getN(), requirementDto.getContents());
         Team team = requirement.getTeam();
         if (!team.isLeader(leaderId)) throw new CustomException(ResponseCode.NOT_TEAM_LEADER);
         team.addRequirement(requirement);

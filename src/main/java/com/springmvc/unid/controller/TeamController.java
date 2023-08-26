@@ -1,11 +1,9 @@
 package com.springmvc.unid.controller;
 
-import com.springmvc.unid.controller.dto.RequirementDto;
-import com.springmvc.unid.controller.dto.TeamDto;
-import com.springmvc.unid.controller.dto.UserDto;
+import com.springmvc.unid.controller.dto.response.ResponseTeamDto;
+import com.springmvc.unid.controller.dto.response.ResponseUserDto;
 import com.springmvc.unid.controller.dto.request.*;
 import com.springmvc.unid.service.TeamService;
-import com.springmvc.unid.service.UserService;
 import com.springmvc.unid.util.api.ApiResponse;
 import com.springmvc.unid.util.exception.ResponseCode;
 import lombok.RequiredArgsConstructor;
@@ -15,99 +13,86 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/teams")
 public class TeamController {
 
     private final TeamService teamService;
-    private final UserService userService;
-
-    // 팀 생성 (+ 팀장으로 등록, 중복 팀 생성 방지 포함)
-    @PostMapping("/api/teams")
-    public ApiResponse<Long> createTeam(@RequestBody RequestCreateTeamDto teamDto){
-        Long id = teamService.createTeam(teamDto);
-        return ApiResponse.success(id, ResponseCode.TEAM_READ_SUCCESS.getMessage());
-    }
 
     // 전체 팀 조회
-    @GetMapping("/api/teams")
-    public ApiResponse<List<TeamDto>> getTeamList(){
-        List<TeamDto> teamDtoList = teamService.findAll();
-        return ApiResponse.success(teamDtoList, ResponseCode.TEAM_READ_SUCCESS.getMessage());
+    @GetMapping
+    public ApiResponse<List<ResponseTeamDto>> getTeams() {
+        return ApiResponse.success(teamService.findAll(), ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
-    // 팀 정보 수정 (팀장만 가능)
-    @PostMapping("/api/teams/{id}")
-    public ApiResponse<Long> updateTeam(@PathVariable("id") Long id, @RequestBody RequestUpdateTeamDto requestUpdateTeamDto){
-        Long uid = teamService.update(id, requestUpdateTeamDto.getTeamDto(), requestUpdateTeamDto.getUserId());return ApiResponse.success(uid, ResponseCode.TEAM_UPDATE_SUCCESS.getMessage());
+    // 팀 생성 (+ 팀장으로 등록, 중복 팀 생성 방지 포함)
+    @PostMapping
+    public ApiResponse<Long> createTeam(@RequestBody CreateTeamDto teamDto) {
+        return ApiResponse.success(teamService.createTeam(teamDto), ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
-    // 팀 삭제 (팀장만 가능)
-    @DeleteMapping("/api/teams/{id}")
-    public ApiResponse<Long> deleteTeam(@PathVariable("id") Long id, @RequestBody Long userId){
-        teamService.deleteTeam(id, userId);
-        return ApiResponse.success(1L, ResponseCode.TEAM_DELETE_SUCCESS.getMessage());
+    // 특정 팀 정보 조회
+    @GetMapping("/{teamId}")
+    public ApiResponse<ResponseTeamDto> getTeamInfo(@PathVariable Long teamId) {
+        return ApiResponse.success(teamService.findOne(teamId), ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
-    // 특정 팀 조회
-    @GetMapping("/api/teams/{id}")
-    public ApiResponse<TeamDto> getTeamInfo(@PathVariable("id") Long id){
-        TeamDto teamDto = teamService.findOne(id);
-        return ApiResponse.success(teamDto, ResponseCode.TEAM_READ_SUCCESS.getMessage());
+    // 특정 팀 정보 수정 (팀장만 가능)
+    @PutMapping("/{teamId}")
+    public ApiResponse<Void> updateTeam(@PathVariable Long teamId, @RequestBody UpdateTeamDto updateTeamDto) {
+        teamService.updateTeamInfo(teamId, updateTeamDto);
+        return ApiResponse.success(null, ResponseCode.TEAM_UPDATE_SUCCESS.getMessage());
+    }
+
+    // 특정 팀 삭제 (팀장만 가능)
+    @DeleteMapping("/{teamId}")
+    public ApiResponse<Void> deleteTeam(@PathVariable Long teamId, @RequestBody Long userId) {
+        teamService.deleteTeam(teamId, userId);
+        return ApiResponse.success(null, ResponseCode.TEAM_DELETE_SUCCESS.getMessage());
+    }
+
+    // 특정 팀에 user가 가입
+    @PostMapping("{teamId}/join")
+    public ApiResponse<Void> joinTeam(@PathVariable Long teamId, @RequestBody JoinTeamDto joinTeamDto){
+        teamService.joinTeam(teamId, joinTeamDto.getTeamId());
+        return ApiResponse.success(null, ResponseCode.TEAM_JOIN_SUCCESS.getMessage());
     }
 
     // 특정 팀의 팀장 조회
-    @GetMapping("/api/teams/{id}/leader")
-    public ApiResponse<UserDto> getTeamLeader(@PathVariable("id") Long id){
-        UserDto teamLeader = teamService.findTeamLeader(id);
-        return ApiResponse.success(teamLeader, ResponseCode.TEAM_READ_SUCCESS.getMessage());
+    @GetMapping("/{teamId}/leader")
+    public ApiResponse<ResponseUserDto> getTeamLeader(@PathVariable Long teamId) {
+        return ApiResponse.success(teamService.findTeamLeader(teamId), ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
     // 특정 팀의 팀원 조회
-    @GetMapping("/api/teams/{id}/members")
-    public ApiResponse<List<UserDto>> getTeamMember(@PathVariable("id") Long id){
-        List<UserDto> teamMembers = teamService.findTeamMember(id);
-        return ApiResponse.success(teamMembers, ResponseCode.TEAM_READ_SUCCESS.getMessage());
+    @GetMapping("/{teamId}/members")
+    public ApiResponse<List<ResponseUserDto>> getTeamMember(@PathVariable Long teamId) {
+        return ApiResponse.success(teamService.findTeamMembers(teamId), ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
     // user의 대학의 팀 조회
-    @GetMapping("/api/teams/univ/{univ}")
-    public ApiResponse<List<TeamDto>> getTeamListByUniv(@PathVariable("univ") String univ){
-        List<TeamDto> teamDtoList = teamService.findTeamByUniv(univ);
-        return ApiResponse.success(teamDtoList, ResponseCode.TEAM_READ_SUCCESS.getMessage());
-    }
-
-    // user가 팀장인 팀 조회
-    @GetMapping("/api/users/{id}/teams/leader")
-    public ApiResponse<List<TeamDto>> getLeaderTeamList(@PathVariable("id") Long id){
-        List<TeamDto> teamDtoList = teamService.findTeamByLeader(userService.findOne(id));
-        return ApiResponse.success(teamDtoList, ResponseCode.TEAM_READ_SUCCESS.getMessage());
+    @GetMapping("/university/{university}")
+    public ApiResponse<List<ResponseTeamDto>> getTeamListByUniv(@PathVariable String university) {
+        return ApiResponse.success(teamService.findTeamByUniv(university), ResponseCode.TEAM_READ_SUCCESS.getMessage());
     }
 
     // 특정 팀의 팀장 변경 (팀장만 가능)
-    @PostMapping("/api/teams/{id}/leader")
-    public ApiResponse<Long> changeLeader(@PathVariable("id") Long id, @RequestBody RequestUpdateTeamLeaderDto requestUpdateTeamLeaderDto){
-        teamService.setTeamLeader(requestUpdateTeamLeaderDto.getLeaderId(), requestUpdateTeamLeaderDto.getNextId(), id);
-        return ApiResponse.success(id, ResponseCode.TEAM_UPDATE_SUCCESS.getMessage());
+    @PutMapping("/{teamId}/leader")
+    public ApiResponse<Void> changeLeader(@PathVariable Long teamId, @RequestBody UpdateTeamLeaderDto updateTeamLeaderDto) {
+        teamService.setTeamLeader(updateTeamLeaderDto.getLeaderId(), updateTeamLeaderDto.getNextLeaderName(), teamId);
+        return ApiResponse.success(null, ResponseCode.TEAM_UPDATE_SUCCESS.getMessage());
     }
 
     // 특정 팀의 구인 요구사항 추가 (팀장만 가능)
-    @PostMapping("/api/teams/{id}/require/add")
-    public ApiResponse<Long> addRequire(@PathVariable("id") Long id, @RequestBody RequirementDto requirementDto){
-        teamService.addRequirement(id, requirementDto);
-        return ApiResponse.success(id, ResponseCode.REQUIREMENT_UPDATE_SUCCESS.getMessage());
-    }
-
-    // 특정 팀의 구인 요구사항 수정 (팀장만 가능)
-    @PostMapping("/api/teams/{id}/require/update")
-    public ApiResponse<Long> updateRequire(@PathVariable("id") Long id, @RequestBody RequirementDto requirementDto){
-        teamService.updateRequirement(id, requirementDto.getRequirementId(), requirementDto);
-        return ApiResponse.success(id, ResponseCode.REQUIREMENT_UPDATE_SUCCESS.getMessage());
+    @PostMapping("/{teamId}/requirement")
+    public ApiResponse<Void> addRequirement(@PathVariable Long teamId, @RequestBody CreateRequirementDto requirementDto) {
+        teamService.addRequirement(teamId, requirementDto);
+        return ApiResponse.success(null, ResponseCode.REQUIREMENT_UPDATE_SUCCESS.getMessage());
     }
 
     // 특정 팀의 구인 요구사항 제거 (팀장만 가능)
-    @PostMapping("/api/teams/{id}/require/delete")
-    public ApiResponse<Long> deleteRequire(@PathVariable("id") Long id, @RequestBody RequestDeleteRequirementDto requestDeleteRequirementDto){
-        teamService.deleteRequirement(id, requestDeleteRequirementDto.getRequirementId(), requestDeleteRequirementDto.getUserId());
-        return ApiResponse.success(id, ResponseCode.REQUIREMENT_DELETE_SUCCESS.getMessage());
+    @DeleteMapping("/{teamId}/requirement")
+    public ApiResponse<Void> deleteRequirement(@PathVariable Long teamId, @RequestBody DeleteRequirementDto deleteRequirementDto) {
+        teamService.deleteRequirement(teamId, deleteRequirementDto.getRequirementId(), deleteRequirementDto.getUserId());
+        return ApiResponse.success(null, ResponseCode.REQUIREMENT_DELETE_SUCCESS.getMessage());
     }
-
 }

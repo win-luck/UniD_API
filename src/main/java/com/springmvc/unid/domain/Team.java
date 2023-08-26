@@ -1,7 +1,6 @@
 package com.springmvc.unid.domain;
 
-import com.springmvc.unid.controller.dto.RequirementDto;
-import com.springmvc.unid.controller.dto.TeamDto;
+import com.springmvc.unid.controller.dto.response.ResponseRequirementDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,7 @@ public class Team {
     private String name; // 팀 이름
 
     // 각 팀 테이블은 팀장의 id를 외래키로 가짐
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "user_id")
     private User user; // 팀장
 
@@ -54,12 +53,12 @@ public class Team {
     }
 
     // 팀 정보 수정
-    public void updateTeam(TeamDto teamDto) {
-        this.name = teamDto.getName();
-        this.oneLine = teamDto.getOneLine();
-        this.description = teamDto.getDescription();
-        this.university = teamDto.getUniversity();
-        this.link = teamDto.getLink();
+    public void updateTeam(String name, String oneLine, String description, String university, String link) {
+        this.name = name;
+        this.oneLine = oneLine;
+        this.description = description;
+        this.university = university;
+        this.link = link;
     }
 
     // 팀원 모집 요구사항 추가
@@ -69,10 +68,10 @@ public class Team {
     }
 
     // 팀원 모집 요구사항 수정
-    public void modifyRequirement(Long id, RequirementDto requirementDto) {
+    public void modifyRequirement(Long id, ResponseRequirementDto responseRequirementDto) {
         for (Requirement requirement : this.requirements) {
             if (id.equals(requirement.getId())) {
-                requirement.updateRequirement(requirementDto.getPosition(), requirementDto.getN(), requirementDto.getContents());
+                requirement.updateRequirement(responseRequirementDto.getPosition(), responseRequirementDto.getN(), responseRequirementDto.getContents());
                 break;
             }
         }
